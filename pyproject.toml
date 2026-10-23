@@ -1,0 +1,29 @@
+[project]
+name = "doxify"
+version = "0.1.0"
+description = "A sloth way to write and document your README files for your repository"
+readme = "README.md"
+authors = [
+    { name = "Ekomjah Edet", email = "ekomjahedet@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "gitpython>=3.2.1",
+    "ollama>=0.6.3",
+    "pydantic>=2.14.1",
+    "rich>=15.0.0",
+    "typer>=0.27.3",
+]
+
+[project.scripts]
+doxify = "doxify:main"
+
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.17.2",
+]
