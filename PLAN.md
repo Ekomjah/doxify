@@ -2,11 +2,18 @@
 
 > Working title: **Doxify**  
 > Tagline: **Portfolio case studies you can defend.**  
-> Status: planning complete; implementation not started.  
-> Plan date: 2026-10-22.  
+> Status: CLI MVP implemented; hosted mode and optional integrations planned.
+> Plan date: 2026-10-22.
+> Last implementation update: 2026-10-23.
 > Hackathon deadline: 2026-10-25, 11:59 PM PDT = 2026-10-26, 7:59 AM WAT.  
 > Target category: **Best Use of Gemma**.  
 > Demo input repo: `/home/ekomjah/Desktop/repos/scholarship-mcp`.
+
+> **Implementation status:** The working MVP is a local CLI in `src/doxify` using
+> Python 3.10, Typer, Rich, Pydantic, GitPython, and Ollama. The FastAPI and
+> Next.js sections below describe the deferred hosted UI, not the current build.
+> Current commands: `doctor`, `scan`, `compile`, `readme`, `verify`, `attest`,
+> and `export`.
 
 ---
 
@@ -44,7 +51,8 @@ It takes a finished software project and turns it into:
 
 - a portfolio-ready case study,
 - an evidence ledger,
-- and an interview defense pack.
+- an interview defense pack,
+- and an optional evidence-backed README.
 
 The important difference is that it does not simply ask a language model to write a story about a repository. It first extracts evidence from the repository, then writes only from that evidence, then verifies that every claim is either:
 
@@ -58,7 +66,7 @@ The product thesis is simple:
 
 The demo project is `scholarship-mcp`, a working MCP server with 20 commits, 9 tools, 3 database models, 26 seeded scholarship records, and no README. That is the perfect before/after story: a real project with a real technical arc, but no written portfolio narrative.
 
-The tool is built with Python 3.14 + FastAPI on the backend and Next.js + TypeScript on the frontend, with a local `gemma3:1b` model through Ollama. It has no database, no cloud API, no telemetry, and no account system. It reads a local repository, writes session files locally, and calls only the local Ollama server.
+The current implementation is a Python 3.10 CLI built with Typer, Rich, Pydantic, GitPython, and a local `gemma3:1b` model through Ollama. A future hosted mode may add FastAPI and Next.js, but the shipped MVP is local-first: it reads a local repository, writes compile artifacts to a local session directory, and calls only the local Ollama server. It has no database, no cloud API, no telemetry, and no account system.
 
 The hackathon submission is a brand-new repository. `scholarship-mcp` is only the input used for the demonstration; it is not the submitted project.
 
@@ -501,10 +509,14 @@ Doxify is not:
 - a code review tool,
 - a plagiarism detector,
 - a hosting service,
-- a generic README generator,
+- a generic README generator that invents setup, usage, or license details,
 - a chatbot,
 - a replacement for human judgment,
 - a tool that runs the project’s tests or deploys it.
+
+`doxify readme` is an evidence-backed, gap-aware output mode. It is allowed to
+generate a README, but it must not invent installation steps, usage examples,
+metrics, test results, deployment status, or licensing.
 
 ### 7.6 Success criteria
 
@@ -519,6 +531,41 @@ For the hackathon demo:
 - Markdown export works.
 - The app works with Wi-Fi off.
 - The code is understandable and tested enough to defend.
+
+### 7.7 README output mode
+
+`doxify readme REPO` is a thin output layer over the compile pipeline:
+
+1. Create a temporary compile session under the user’s temp directory, for
+   example `/tmp/doxify-readme-scholarship-mcp-20261023-120000/`.
+2. Call the same compile pipeline used by `doxify compile`.
+3. Build a README from the compiled evidence cards and claims.
+4. Write only the README to the target.
+5. Leave the evidence ledger, claims, sections, and defense pack in `/tmp`.
+
+Default target:
+
+- `REPO/README.md`.
+
+Safety rules:
+
+- Never overwrite an existing README unless `--force` is passed.
+- When `--force` overwrites a file, back it up inside the temporary session.
+- `--output PATH` writes to a specific file or directory.
+- `--cleanup` removes the temporary compile session after a successful write.
+- Failed compiles keep the temporary session for debugging.
+
+Content rules:
+
+- Use verified and attested claims plus deterministic evidence cards.
+- Exclude unresolved and rejected claims from visible README prose.
+- Exclude the evidence card that only says “No README”.
+- Strip visible `[E#]` citation tokens from README prose.
+- Preserve provenance in hidden HTML comments such as
+  `<!-- doxify-evidence: E4 E5 E7 -->`.
+- Report omitted claims and the temporary session path in the terminal.
+- Do not claim tests pass, deployment, performance, user counts, or licensing
+  without evidence.
 
 ---
 
@@ -590,6 +637,7 @@ For the hackathon demo:
    - `defense.md`
    - `claims.json`
    - `evidence.json`
+   - Optional `README.md` via `doxify readme`; compile artifacts stay in `/tmp`.
    - Optional: copy Markdown to clipboard.
 
 ### 8.2 Visual direction
@@ -1391,6 +1439,10 @@ Write:
 - `claims.json`
 - `evidence.json`
 
+The optional README mode writes only `README.md` (or the requested output path)
+to the target repository. Its compile artifacts remain in the temporary session
+described in §7.7.
+
 Markdown case study structure:
 
 ```md
@@ -1760,6 +1812,25 @@ Stretch goal only. Do not build it until the core works.
 
 If time allows, export a single self-contained HTML file with the same dossier aesthetic. This would be a nice portfolio artifact, but Markdown is enough for the hackathon.
 
+### 15.5 README export
+
+`doxify readme REPO` writes an evidence-backed README without polluting the
+target repository with compile artifacts:
+
+- compile runs in `/tmp/doxify-readme-<repo>-<timestamp>/`;
+- the target defaults to `REPO/README.md`;
+- `--output` selects a different file or directory;
+- `--force` is required to overwrite an existing file and creates a backup in
+  the temporary session;
+- `--cleanup` removes the temporary session after success;
+- only verified/attested claims and deterministic evidence appear in visible
+  prose;
+- unresolved claims are reported in the terminal and left in `claims.json`;
+- evidence provenance is stored in hidden HTML comments.
+
+The README must not claim installation steps, usage, tests, deployment,
+performance, user counts, or licensing that the evidence does not support.
+
 ---
 
 ## 16. Security and privacy
@@ -1841,7 +1912,7 @@ Goals:
 
 Acceptance criteria:
 
-- `make dev` starts FastAPI and Next.js.
+- `uv run doxify compile` and `uv run doxify readme` work from the CLI.
 - Entering `scholarship-mcp` produces `evidence.json`.
 - Evidence includes 20 commits, 9 tools, 3 models, 26 records, no README.
 - The UI lists evidence cards.
@@ -1893,10 +1964,10 @@ Acceptance criteria:
 - At least 5 defense questions are generated.
 - A gap claim can be answered and becomes `ATTESTED`.
 - The UI is usable with keyboard only.
-- `cd server && uv run pytest` passes.
-- `cd server && uv run mypy app` passes.
-- `cd web && npm run typecheck` passes.
-- The precomputed demo contains all four export files.
+- `uv run pytest -q` passes.
+- `uv run ruff check .` passes.
+- `uv build` produces a source distribution and wheel.
+- The precomputed demo contains the case study, defense pack, and README.
 - A fresh clone can run the app.
 
 ### 17.4 Sunday, October 25 — Demo, write-up, submit
@@ -1946,7 +2017,8 @@ Do not cut:
 
 ### 18.1 Unit tests
 
-Use `pytest` (with `pytest-asyncio` for async pipeline tests). FastAPI route tests can use `fastapi.testclient.TestClient`, which uses `httpx` under the hood.
+Use `pytest` for the CLI and deterministic pipeline. The current suite lives in
+`tests/`. FastAPI route tests are deferred with the hosted UI.
 
 Test:
 
@@ -1958,7 +2030,13 @@ Test:
 - secret path skipping,
 - path validation,
 - evidence card ID generation,
-- summary counts.
+- summary counts,
+- README default target resolution,
+- README overwrite protection and backup,
+- README builder excludes unresolved claims and the “No README” card,
+- README output is the only file written outside the temp compile session,
+- `--cleanup` removes the temp session only after a successful write,
+- README CLI success path.
 
 ### 18.2 Integration tests
 
@@ -1986,7 +2064,10 @@ With Ollama running:
 5. assert “OAuth” is not verified,
 6. assert “10,000” is not verified,
 7. assert defense questions exist,
-8. assert Markdown export exists.
+8. assert Markdown export exists,
+9. run `doxify readme` with `--output /tmp/doxify-readme-e2e.md`,
+10. assert the README exists and the temp compile session contains the
+    evidence ledger.
 
 If Ollama is not available, skip the E2E test with a clear message.
 
@@ -1996,6 +2077,9 @@ If Ollama is not available, skip the E2E test with a clear message.
 - Non-git directory.
 - Repo with no commits.
 - Repo with no README.
+- Repo with an existing README and `doxify readme` without `--force`.
+- Repo with an existing README and `doxify readme --force` (verify backup).
+- `doxify readme --cleanup` removes the temp session after success.
 - Repo with a very large file.
 - Repo with a `.env` file.
 - Ollama down.
@@ -2032,26 +2116,34 @@ Before submission:
 ```bash
 git clone <repo> /tmp/doxify-test
 cd /tmp/doxify-test
-
-# Backend
-cd server
 uv sync
-uv run pytest
-uv run mypy app
-cd ..
-
-# Frontend
-cd web
-npm install
-npm run typecheck
-npm run build
-cd ..
-
-# Both services
-make dev
+uv run doxify doctor
+uv run pytest -q
+uv run ruff check .
+uv build
 ```
 
-Then compile a sample repo. Fix anything that only works in the original directory.
+Then compile a sample repo and generate a README into `/tmp`:
+
+```bash
+uv run doxify readme /home/ekomjah/Desktop/repos/scholarship-mcp \
+  --output /tmp/doxify-readme-test.md
+```
+
+Fix anything that only works in the original directory.
+
+### 18.7 CI
+
+`.github/workflows/ci.yml` runs on every push and pull request:
+
+1. install Python 3.10 and `uv`,
+2. `uv sync --frozen`,
+3. `uv run ruff check .`,
+4. `uv run pytest -q`,
+5. `uv build`,
+6. upload the source distribution and wheel as artifacts.
+
+CI must be green before merging or tagging the submission.
 
 ---
 
@@ -2254,12 +2346,11 @@ Before submitting:
 - [ ] `LICENSE` added (MIT).
 - [ ] `.gitignore` excludes `.doxify/`, `.venv/`, `__pycache__/`, `.pytest_cache/`, `.mypy_cache/`, `node_modules/`, `.next/`, and secrets.
 - [ ] No `.env` or credentials committed.
-- [ ] `cd server && uv sync` works from a fresh clone.
-- [ ] `cd web && npm install` works from a fresh clone.
-- [ ] `cd server && uv run mypy app` passes.
-- [ ] `cd web && npm run typecheck` passes.
-- [ ] `cd server && uv run pytest` passes.
-- [ ] `cd web && npm run build` passes.
+- [ ] `uv sync --frozen` works from a fresh clone.
+- [ ] `uv run ruff check .` passes.
+- [ ] `uv run pytest -q` passes.
+- [ ] `uv build` produces a source distribution and wheel.
+- [ ] `uv run doxify readme` writes only the requested README.
 - [ ] `make dev` starts the app.
 - [ ] Ollama setup is documented.
 - [ ] `gemma3:1b` is named explicitly.
@@ -2420,8 +2511,8 @@ Most decisions are resolved; the rest can be made during implementation.
    - Resolved: Doxify. It is memorable, fits the defense angle, and the user has locked it.
 
 2. **Stack:** Python/FastAPI backend and Next.js frontend?
-   - Resolved: yes. The backend is Python 3.14 + FastAPI + Pydantic; the frontend is Next.js (App Router) + React + TypeScript. Python 3.14, `uv`, Node 24, and npm are all available.
-   - Remaining sub-decision: generate the frontend TypeScript types from FastAPI's `/openapi.json` with `openapi-typescript`, or maintain `web/lib/types.ts` by hand for the MVP. Recommendation: hand-maintain for the MVP, generate later if time allows.
+   - Resolved for the MVP: Python 3.10 + Typer/Rich/Pydantic/GitPython/Ollama CLI in `src/doxify`. FastAPI and Next.js are deferred hosted-mode work, not required for the hackathon submission.
+   - If hosted mode is added later, generate the frontend TypeScript types from FastAPI's `/openapi.json` with `openapi-typescript` rather than maintaining a hand-written mirror.
 
 3. **Output:** Markdown only or HTML too?
    - Recommendation: Markdown only for the MVP. HTML is a stretch goal.
@@ -2451,7 +2542,7 @@ Most decisions are resolved; the rest can be made during implementation.
 
 ## 25. First commands
 
-These are suggestions for the implementation phase, not commands that have been run yet.
+These are the current local development and verification commands.
 
 ```bash
 cd /home/ekomjah/Desktop/repos/doxify
@@ -2461,34 +2552,30 @@ ollama list
 ollama --version
 python3 --version
 uv --version
-node --version
-npm --version
 
-# Backend scaffold
-mkdir -p server/app/{routes,core,prompts} server/tests/fixtures
-cd server
-uv init --bare --name doxify-api
-uv add fastapi "uvicorn[standard]" httpx
-uv add --dev pytest pytest-asyncio mypy ruff
-cd ..
+# Install the locked environment
+uv sync --frozen
 
-# Frontend scaffold
-npx create-next-app@latest web --typescript --app --no-tailwind --eslint --use-npm
-cd web
-npm install
-cd ..
+# Check local dependencies and Ollama
+uv run doxify doctor
 
-# Shared contract snapshot and demo output
-mkdir -p shared demo/scholarship-mcp
+# Scan the demo repository without calling the model
+uv run doxify scan /home/ekomjah/Desktop/repos/scholarship-mcp
 
-# Start Ollama if it is not already running
-ollama serve
+# Compile the full case study and defense pack
+uv run doxify compile /home/ekomjah/Desktop/repos/scholarship-mcp
 
-# Pull the model if it is missing
-ollama pull gemma3:1b
+# Generate an evidence-backed README into /tmp
+uv run doxify readme /home/ekomjah/Desktop/repos/scholarship-mcp \
+  --output /tmp/doxify-readme.md
+
+# Verify the implementation
+uv run pytest -q
+uv run ruff check .
+uv build
 ```
 
-Do not commit `.venv/`, `__pycache__/`, `.pytest_cache/`, `.mypy_cache/`, `node_modules/`, `.next/`, `.doxify/`, or any `.env` file.
+Do not commit `.venv/`, `__pycache__/`, `.pytest_cache/`, `.ruff_cache/`, `build/`, `dist/`, `*.egg-info/`, or any `.env` file.
 
 ---
 
@@ -2507,7 +2594,7 @@ This appendix is the source material for the demo. It should be used to validate
 - Package manager: npm
 - Runtime: Node.js
 
-This appendix describes the **demo input repository**, not Doxify itself. Doxify’s backend is Python/FastAPI. The scanner is language-agnostic and reads `package.json` for JavaScript projects and `pyproject.toml`/`requirements.txt` for Python projects.
+This appendix describes the **demo input repository**, not Doxify itself. Doxify’s current MVP is a Python CLI; FastAPI is deferred hosted-mode work. The scanner is language-agnostic and reads `package.json` for JavaScript projects and `pyproject.toml`/`requirements.txt` for Python projects.
 
 ### A.2 Tools
 
