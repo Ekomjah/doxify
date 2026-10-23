@@ -1,0 +1,731 @@
+{
+  "schema_version": "1.0",
+  "repo": {
+    "path": "/home/ekomjah/Desktop/repos/nextjs-dashboard",
+    "name": "nextjs-dashboard",
+    "head_sha": "89c8b41ca98d09afd41b996f4c38f24f325f2264",
+    "branch": "main",
+    "commit_count": 3,
+    "first_commit_date": "2026-10-01",
+    "last_commit_date": "2026-10-01",
+    "tracked_file_count": 53,
+    "languages": {
+      "TypeScript": 34,
+      "JSON": 2,
+      "YAML": 2,
+      "JavaScript": 1,
+      "Markdown": 1
+    },
+    "readme_path": "README.md",
+    "manifests": [
+      "package.json"
+    ],
+    "test_files": [],
+    "deploy_files": []
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "kind": "metric",
+      "title": "Commit timeline",
+      "text": "nextjs-dashboard has 3 commits between 2026-10-01 and 2026-10-01.",
+      "quote": null,
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "89c8b41ca98d09afd41b996f4c38f24f325f2264",
+          "url": null
+        }
+      ],
+      "strength": "deterministic",
+      "keywords": [
+        "commits",
+        "timeline",
+        "history",
+        "dates"
+      ],
+      "meta": {
+        "commit_count": 3,
+        "first_commit_date": "2026-10-01",
+        "last_commit_date": "2026-10-01"
+      }
+    },
+    {
+      "id": "E2",
+      "kind": "metric",
+      "title": "Repository size and languages",
+      "text": "The repository tracks 53 files, with languages TypeScript (34), JSON (2), YAML (2), JavaScript (1), Markdown (1).",
+      "quote": null,
+      "refs": [],
+      "strength": "deterministic",
+      "keywords": [
+        "files",
+        "languages",
+        "repository",
+        "size"
+      ],
+      "meta": {
+        "tracked_file_count": 53
+      }
+    },
+    {
+      "id": "E3",
+      "kind": "readme",
+      "title": "README present",
+      "text": "The repository contains a README at README.md.",
+      "quote": null,
+      "refs": [
+        {
+          "path": "README.md",
+          "lines": null,
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "readme",
+      "keywords": [
+        "readme",
+        "documentation"
+      ],
+      "meta": {}
+    },
+    {
+      "id": "E4",
+      "kind": "stack",
+      "title": "Declared dependencies",
+      "text": "The project declares runtime dependencies including @heroicons/react, @tailwindcss/forms, autoprefixer, bcrypt, clsx, next, next-auth, postcss, postgres, react, react-dom, tailwindcss.",
+      "quote": null,
+      "refs": [
+        {
+          "path": "package.json",
+          "lines": null,
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "deterministic",
+      "keywords": [
+        "heroicons",
+        "react",
+        "tailwindcss",
+        "forms",
+        "autoprefixer",
+        "bcrypt",
+        "clsx",
+        "next",
+        "next-auth",
+        "postcss"
+      ],
+      "meta": {
+        "dependencies": [
+          "@heroicons/react",
+          "@tailwindcss/forms",
+          "autoprefixer",
+          "bcrypt",
+          "clsx",
+          "next",
+          "next-auth",
+          "postcss",
+          "postgres",
+          "react",
+          "react-dom",
+          "tailwindcss",
+          "typescript",
+          "use-debounce",
+          "zod"
+        ]
+      }
+    },
+    {
+      "id": "E5",
+      "kind": "stack",
+      "title": "Project scripts",
+      "text": "The project defines scripts named build, dev, start.",
+      "quote": null,
+      "refs": [
+        {
+          "path": "package.json",
+          "lines": null,
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "deterministic",
+      "keywords": [
+        "scripts",
+        "commands",
+        "test",
+        "build",
+        "build",
+        "dev",
+        "start"
+      ],
+      "meta": {
+        "scripts": [
+          "build",
+          "dev",
+          "start"
+        ]
+      }
+    },
+    {
+      "id": "E6",
+      "kind": "file",
+      "title": "Top-level structure",
+      "text": "The repository is organized into these top-level paths: app (33), public (10), .gitignore (1), .npmrc (1), README.md (1), next.config.ts (1), package.json (1), pnpm-lock.yaml (1).",
+      "quote": null,
+      "refs": [],
+      "strength": "deterministic",
+      "keywords": [
+        "architecture",
+        "directories",
+        "structure",
+        "modules"
+      ],
+      "meta": {
+        "top_level": {
+          ".gitignore": 1,
+          ".npmrc": 1,
+          "README.md": 1,
+          "app": 33,
+          "next.config.ts": 1,
+          "package.json": 1,
+          "pnpm-lock.yaml": 1,
+          "pnpm-workspace.yaml": 1,
+          "postcss.config.js": 1,
+          "public": 10,
+          "tailwind.config.ts": 1,
+          "tsconfig.json": 1
+        }
+      }
+    },
+    {
+      "id": "E7",
+      "kind": "commit",
+      "title": "Commit on 2026-10-01",
+      "text": "Commit 89c8b41ca98d on 2026-10-01 has subject \"refactor: centralize database connection logic and update seed functions to use transaction\".",
+      "quote": "refactor: centralize database connection logic and update seed functions to use transaction",
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "89c8b41ca98d",
+          "url": null
+        }
+      ],
+      "strength": "commit",
+      "keywords": [
+        "refactor",
+        "centralize",
+        "database",
+        "connection",
+        "logic",
+        "update",
+        "seed",
+        "functions",
+        "transaction"
+      ],
+      "meta": {
+        "commit": "89c8b41ca98d",
+        "date": "2026-10-01",
+        "subject": "refactor: centralize database connection logic and update seed functions to use transaction"
+      }
+    },
+    {
+      "id": "E8",
+      "kind": "commit",
+      "title": "Commit on 2026-10-01",
+      "text": "Commit 9e8a78e90c94 on 2026-10-01 has subject \"refactor: remove git tracking of env vars\".",
+      "quote": "refactor: remove git tracking of env vars",
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "9e8a78e90c94",
+          "url": null
+        }
+      ],
+      "strength": "commit",
+      "keywords": [
+        "refactor",
+        "remove",
+        "git",
+        "tracking",
+        "env",
+        "vars"
+      ],
+      "meta": {
+        "commit": "9e8a78e90c94",
+        "date": "2026-10-01",
+        "subject": "refactor: remove git tracking of env vars"
+      }
+    },
+    {
+      "id": "E9",
+      "kind": "commit",
+      "title": "Commit on 2026-10-01",
+      "text": "Commit 42bcb364b968 on 2026-10-01 has subject \"initial commit\".",
+      "quote": "initial commit",
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "42bcb364b968",
+          "url": null
+        }
+      ],
+      "strength": "commit",
+      "keywords": [
+        "initial",
+        "commit"
+      ],
+      "meta": {
+        "commit": "42bcb364b968",
+        "date": "2026-10-01",
+        "subject": "initial commit"
+      }
+    },
+    {
+      "id": "E10",
+      "kind": "code",
+      "title": "Source: app/lib/db.ts",
+      "text": "app/lib/db.ts defines sql.",
+      "quote": "// Reuse one client across hot reloads instead of leaking a pool per module eval. const globalForDb = globalThis as unknown as { sql?: ReturnType<typeof postgres>; }; export const sql = globalForDb.sql ?? postgres(process.env.POSTGRES_URL, { ssl: 'require', max: 5, idle_timeout: 20, connect_timeout: 30, }); if (process.env.NODE_ENV !== 'production') { globalForDb.sql = sql; }",
+      "refs": [
+        {
+          "path": "app/lib/db.ts",
+          "lines": "18-34",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "lib",
+        "db",
+        "ts",
+        "sql"
+      ],
+      "meta": {
+        "path": "app/lib/db.ts",
+        "symbols": [
+          "sql"
+        ],
+        "line_start": 18,
+        "line_end": 34
+      }
+    },
+    {
+      "id": "E11",
+      "kind": "code",
+      "title": "Source: app/dashboard/customers/page.tsx",
+      "text": "app/dashboard/customers/page.tsx defines Customers.",
+      "quote": "export default function Customers() { return <>Customers Page</> }",
+      "refs": [
+        {
+          "path": "app/dashboard/customers/page.tsx",
+          "lines": "1-3",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "dashboard",
+        "customers",
+        "page",
+        "tsx"
+      ],
+      "meta": {
+        "path": "app/dashboard/customers/page.tsx",
+        "symbols": [
+          "Customers"
+        ],
+        "line_start": 1,
+        "line_end": 3
+      }
+    },
+    {
+      "id": "E12",
+      "kind": "code",
+      "title": "Source: app/dashboard/invoices/page.tsx",
+      "text": "app/dashboard/invoices/page.tsx defines Invoices.",
+      "quote": "export default function Invoices() { return <>Invoices Page</> }",
+      "refs": [
+        {
+          "path": "app/dashboard/invoices/page.tsx",
+          "lines": "1-3",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "dashboard",
+        "invoices",
+        "page",
+        "tsx"
+      ],
+      "meta": {
+        "path": "app/dashboard/invoices/page.tsx",
+        "symbols": [
+          "Invoices"
+        ],
+        "line_start": 1,
+        "line_end": 3
+      }
+    },
+    {
+      "id": "E13",
+      "kind": "code",
+      "title": "Source: app/dashboard/layout.tsx",
+      "text": "app/dashboard/layout.tsx defines Layout.",
+      "quote": "import SideNav from \"@/app/ui/dashboard/sidenav\"; export default function Layout({ children }: { children: React.ReactNode }) { return ( <div className=\"flex h-screen flex-col md:flex-row md:overflow-hidden\"> <div className=\"w-full flex-none md:w-64\"> <SideNav /> </div> <div className=\"grow p-6 md:overflow-y-auto md:p-12\">{children}</div> </div> ) }",
+      "refs": [
+        {
+          "path": "app/dashboard/layout.tsx",
+          "lines": "1-11",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "dashboard",
+        "layout",
+        "tsx"
+      ],
+      "meta": {
+        "path": "app/dashboard/layout.tsx",
+        "symbols": [
+          "Layout"
+        ],
+        "line_start": 1,
+        "line_end": 11
+      }
+    },
+    {
+      "id": "E14",
+      "kind": "code",
+      "title": "Source: app/layout.tsx",
+      "text": "app/layout.tsx defines RootLayout.",
+      "quote": "import '@/app/ui/global.css' import { inter } from '@/app/ui/fonts'; export default function RootLayout({ children, }: { children: React.ReactNode; }) { return ( <html lang=\"en\"> <body className={`${inter.className} antialiased`}>{children}</body> </html> ); }",
+      "refs": [
+        {
+          "path": "app/layout.tsx",
+          "lines": "1-13",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "layout",
+        "tsx",
+        "rootlayout"
+      ],
+      "meta": {
+        "path": "app/layout.tsx",
+        "symbols": [
+          "RootLayout"
+        ],
+        "line_start": 1,
+        "line_end": 13
+      }
+    },
+    {
+      "id": "E15",
+      "kind": "code",
+      "title": "Source: app/lib/data.ts",
+      "text": "app/lib/data.ts defines fetchRevenue, fetchLatestInvoices, fetchCardData, fetchFilteredInvoices, fetchInvoicesPages, fetchInvoiceById.",
+      "quote": "import { sql } from \"./db\"; export async function fetchRevenue() { try { // Artificially delay a response for demo purposes. // Don't do this in production :) console.log(\"Fetching revenue data...\"); await new Promise((resolve) => setTimeout(resolve, 3000)); const data = await sql<Revenue[]>`SELECT * FROM revenue`; console.log(\"Data fetch completed after 3 seconds.\"); return data; } catch (error) { console.error(\"Database Error:\", error); throw new Error(\"Failed to fetch revenue data.\"); }",
+      "refs": [
+        {
+          "path": "app/lib/data.ts",
+          "lines": "10-28",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "lib",
+        "data",
+        "ts",
+        "fetchrevenue",
+        "fetchlatestinvoices",
+        "fetchcarddata",
+        "fetchfilteredinvoices",
+        "fetchinvoicespages",
+        "fetchinvoicebyid"
+      ],
+      "meta": {
+        "path": "app/lib/data.ts",
+        "symbols": [
+          "fetchRevenue",
+          "fetchLatestInvoices",
+          "fetchCardData",
+          "fetchFilteredInvoices",
+          "fetchInvoicesPages",
+          "fetchInvoiceById",
+          "fetchCustomers",
+          "fetchFilteredCustomers"
+        ],
+        "line_start": 10,
+        "line_end": 28
+      }
+    },
+    {
+      "id": "E16",
+      "kind": "code",
+      "title": "Source: app/lib/definitions.ts",
+      "text": "app/lib/definitions.ts contains 88 lines.",
+      "quote": "// This file contains type definitions for your data. // It describes the shape of the data, and what data type each property should accept. // For simplicity of teaching, we're manually defining these types. // However, these types are generated automatically if you're using an ORM such as Prisma. export type User = { id: string; name: string; email: string; password: string; }; export type Customer = { id: string; name: string; email: string; image_url: string; }; export type Invoice = {",
+      "refs": [
+        {
+          "path": "app/lib/definitions.ts",
+          "lines": "1-19",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "lib",
+        "definitions",
+        "ts"
+      ],
+      "meta": {
+        "path": "app/lib/definitions.ts",
+        "symbols": [],
+        "line_start": 1,
+        "line_end": 19
+      }
+    },
+    {
+      "id": "E17",
+      "kind": "code",
+      "title": "Source: app/lib/placeholder-data.ts",
+      "text": "app/lib/placeholder-data.ts contains 147 lines.",
+      "quote": "// This file contains placeholder data that you'll be replacing with real data in the Data Fetching chapter: // https://nextjs.org/learn/dashboard-app/fetching-data const users = [ { id: '410544b2-4001-4271-9855-fec4b6a6442a', name: 'User', email: 'user@nextmail.com', password: '123456', }, ]; const customers = [ { id: 'd6e15727-9fe1-4961-8c5b-ea44a9bd81aa', name: 'Evil Rabbit', email: 'evil@rabbit.com', image_url: '/customers/evil-rabbit.png', }, {",
+      "refs": [
+        {
+          "path": "app/lib/placeholder-data.ts",
+          "lines": "1-19",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "lib",
+        "placeholder-data",
+        "ts"
+      ],
+      "meta": {
+        "path": "app/lib/placeholder-data.ts",
+        "symbols": [],
+        "line_start": 1,
+        "line_end": 19
+      }
+    },
+    {
+      "id": "E18",
+      "kind": "code",
+      "title": "Source: app/lib/utils.ts",
+      "text": "app/lib/utils.ts defines formatCurrency, formatDateToLocal, generateYAxis, generatePagination.",
+      "quote": "import { Revenue } from './definitions'; export const formatCurrency = (amount: number) => { return (amount / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD', }); }; export const formatDateToLocal = ( dateStr: string, locale: string = 'en-US', ) => { const date = new Date(dateStr); const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric', };",
+      "refs": [
+        {
+          "path": "app/lib/utils.ts",
+          "lines": "1-19",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "lib",
+        "utils",
+        "ts",
+        "formatcurrency",
+        "formatdatetolocal",
+        "generateyaxis",
+        "generatepagination"
+      ],
+      "meta": {
+        "path": "app/lib/utils.ts",
+        "symbols": [
+          "formatCurrency",
+          "formatDateToLocal",
+          "generateYAxis",
+          "generatePagination"
+        ],
+        "line_start": 1,
+        "line_end": 19
+      }
+    },
+    {
+      "id": "E19",
+      "kind": "code",
+      "title": "Source: app/page.tsx",
+      "text": "app/page.tsx defines Page.",
+      "quote": "import Image from 'next/image'; export default function Page() { return ( <main className=\"flex min-h-screen flex-col p-6\"> <div className=\"relative w-0 h-0 border-l-[15px] border-r-[15px] border-b-[26px] border-l-transparent border-r-transparent border-b-black\" /> <div className=\"flex h-20 shrink-0 items-end rounded-lg bg-blue-500 p-4 md:h-52\"> <AcmeLogo /> </div> <div className=\"mt-4 flex grow flex-col gap-4 md:flex-row\"> <div className=\"flex flex-col justify-center gap-6 rounded-lg bg-gray-50 px-6 py-10 md:w-2/5 md:px-20\"> <p className={`${lusitana.className} antialiased text-xl text-gray-800 md:text-3xl md:leading-normal`}> <strong>Welcome to Acme.</strong> This is the example for the{' '} <a href=\"https://nextjs.org/learn/\" className=\"text-blue-500\"> Next.js Learn Course </a> , brought to you by Vercel.",
+      "refs": [
+        {
+          "path": "app/page.tsx",
+          "lines": "5-23",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "page",
+        "tsx"
+      ],
+      "meta": {
+        "path": "app/page.tsx",
+        "symbols": [
+          "Page"
+        ],
+        "line_start": 5,
+        "line_end": 23
+      }
+    },
+    {
+      "id": "E20",
+      "kind": "code",
+      "title": "Source: app/query/route.ts",
+      "text": "app/query/route.ts defines GET.",
+      "quote": "} export async function GET() { try { return Response.json(await listInvoices()); } catch (error) { return Response.json({ error }, { status: 500 }); } }",
+      "refs": [
+        {
+          "path": "app/query/route.ts",
+          "lines": "14-22",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "query",
+        "route",
+        "ts",
+        "get"
+      ],
+      "meta": {
+        "path": "app/query/route.ts",
+        "symbols": [
+          "GET"
+        ],
+        "line_start": 14,
+        "line_end": 22
+      }
+    },
+    {
+      "id": "E21",
+      "kind": "code",
+      "title": "Source: app/seed/route.ts",
+      "text": "app/seed/route.ts defines GET.",
+      "quote": "} export async function GET() { try { await sql.begin(async (tx) => { await seedUsers(tx); await seedCustomers(tx); await seedInvoices(tx); await seedRevenue(tx); }); return Response.json({ message: \"Database seeded successfully\" }); } catch (error) { console.log(\"Error seeding database:\", error); return Response.json( { error: error instanceof Error ? error.message : String(error) }, { status: 500 }, ); }",
+      "refs": [
+        {
+          "path": "app/seed/route.ts",
+          "lines": "104-122",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "seed",
+        "route",
+        "ts",
+        "get"
+      ],
+      "meta": {
+        "path": "app/seed/route.ts",
+        "symbols": [
+          "GET"
+        ],
+        "line_start": 104,
+        "line_end": 122
+      }
+    },
+    {
+      "id": "E22",
+      "kind": "code",
+      "title": "Source: app/ui/acme-logo.tsx",
+      "text": "app/ui/acme-logo.tsx defines AcmeLogo.",
+      "quote": "import { lusitana } from '@/app/ui/fonts'; export default function AcmeLogo() { return ( <div className={`${lusitana.className} flex flex-row items-center leading-none text-white`} > <GlobeAltIcon className=\"h-12 w-12 rotate-[15deg]\" /> <p className=\"text-[44px]\">Acme</p> </div> ); }",
+      "refs": [
+        {
+          "path": "app/ui/acme-logo.tsx",
+          "lines": "2-13",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "ui",
+        "acme-logo",
+        "tsx",
+        "acmelogo"
+      ],
+      "meta": {
+        "path": "app/ui/acme-logo.tsx",
+        "symbols": [
+          "AcmeLogo"
+        ],
+        "line_start": 2,
+        "line_end": 13
+      }
+    },
+    {
+      "id": "E23",
+      "kind": "code",
+      "title": "Source: app/ui/button.tsx",
+      "text": "app/ui/button.tsx defines Button.",
+      "quote": "} export function Button({ children, className, ...rest }: ButtonProps) { return ( <button {...rest} className={clsx( 'flex h-10 items-center rounded-lg bg-blue-500 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 active:bg-blue-600 aria-disabled:cursor-not-allowed aria-disabled:opacity-50', className, )} > {children} </button> ); }",
+      "refs": [
+        {
+          "path": "app/ui/button.tsx",
+          "lines": "5-19",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "app",
+        "ui",
+        "button",
+        "tsx"
+      ],
+      "meta": {
+        "path": "app/ui/button.tsx",
+        "symbols": [
+          "Button"
+        ],
+        "line_start": 5,
+        "line_end": 19
+      }
+    }
+  ]
+}
