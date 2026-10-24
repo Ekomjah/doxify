@@ -299,7 +299,11 @@ def load_session(output_dir: Path) -> tuple[ScanResult, SectionsDocument, Claims
     return scan, sections, claims, defense, manifest
 
 
-def verify_session(output_dir: Path) -> VerificationReport:
+def load_evidence_file(path: Path) -> ScanResult:
+    return read_model(path.expanduser().resolve(), ScanResult)
+
+
+def verify_session(output_dir: Path, *, write: bool = True) -> VerificationReport:
     output = output_dir.expanduser().resolve()
     scan, sections, claims_doc, defense, manifest = load_session(output)
     claims = verify_claims(claims_doc.claims, scan.evidence)
@@ -308,8 +312,11 @@ def verify_session(output_dir: Path) -> VerificationReport:
         section_count=len(sections.sections),
         evidence_count=len(scan.evidence),
     )
-    write_claims_json(output, claims, summary)
     report = VerificationReport(summary=summary, claims=claims)
+    if not write:
+        return report
+
+    write_claims_json(output, claims, summary)
     write_json(output / VERIFICATION, report)
     write_case_study(output, scan.repo, sections.sections, scan.evidence, summary, claims)
     write_defense(output, scan.repo, defense.questions)

@@ -1,0 +1,998 @@
+{
+  "schema_version": "1.0",
+  "repo": {
+    "path": ".",
+    "name": "doxify",
+    "head_sha": "2f2bfdd69d0bcb18747d97db147083e1ebc9fe8a",
+    "branch": "main",
+    "commit_count": 8,
+    "first_commit_date": "2026-10-23",
+    "last_commit_date": "2026-10-24",
+    "tracked_file_count": 51,
+    "languages": {
+      "Python": 28,
+      "JSON": 13,
+      "Markdown": 4,
+      "TOML": 1,
+      "YAML": 1
+    },
+    "readme_path": "README.md",
+    "manifests": [
+      "pyproject.toml"
+    ],
+    "test_files": [
+      "tests/test_ollama_client.py",
+      "tests/test_readme.py",
+      "tests/test_scout.py"
+    ],
+    "deploy_files": [
+      ".github/workflows/ci.yml"
+    ]
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "kind": "metric",
+      "title": "Commit timeline",
+      "text": "doxify has 8 commits between 2026-10-23 and 2026-10-24.",
+      "quote": null,
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "2f2bfdd69d0bcb18747d97db147083e1ebc9fe8a",
+          "url": null
+        }
+      ],
+      "strength": "deterministic",
+      "keywords": [
+        "commits",
+        "timeline",
+        "history",
+        "dates"
+      ],
+      "meta": {
+        "commit_count": 8,
+        "first_commit_date": "2026-10-23",
+        "last_commit_date": "2026-10-24"
+      }
+    },
+    {
+      "id": "E2",
+      "kind": "metric",
+      "title": "Repository size and languages",
+      "text": "The repository tracks 51 files, with languages Python (28), JSON (13), Markdown (4), TOML (1), YAML (1).",
+      "quote": null,
+      "refs": [],
+      "strength": "deterministic",
+      "keywords": [
+        "files",
+        "languages",
+        "repository",
+        "size"
+      ],
+      "meta": {
+        "tracked_file_count": 51
+      }
+    },
+    {
+      "id": "E3",
+      "kind": "readme",
+      "title": "README present",
+      "text": "The repository contains a README at README.md.",
+      "quote": "# Doxify Doxify compiles evidence-backed READMEs and portfolio case studies from local git repositories. It also scouts breaking dependency upgrades against your code. The core pipeline is deterministic: scan the repository, build evidence cards, generate prose from that evidence, verify every claim, and export the result. The model only writes; the compiler checks. <!-- doxify-attested: project description and positioning --> ## Install Requires Python 3.10+ and git. ```bash uv sync",
+      "refs": [
+        {
+          "path": "README.md",
+          "lines": "1-18",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "readme",
+      "keywords": [
+        "readme",
+        "present",
+        "contains",
+        "md",
+        "doxify",
+        "compiles",
+        "evidence-backed",
+        "readmes",
+        "portfolio",
+        "case"
+      ],
+      "meta": {
+        "path": "README.md"
+      }
+    },
+    {
+      "id": "E4",
+      "kind": "stack",
+      "title": "Declared dependencies",
+      "text": "The project declares runtime dependencies including gitpython, ollama, pydantic, rich, sentry-sdk, tomli, typer.",
+      "quote": null,
+      "refs": [
+        {
+          "path": "pyproject.toml",
+          "lines": null,
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "deterministic",
+      "keywords": [
+        "gitpython",
+        "ollama",
+        "pydantic",
+        "rich",
+        "sentry-sdk",
+        "tomli",
+        "typer"
+      ],
+      "meta": {
+        "dependencies": [
+          "gitpython",
+          "ollama",
+          "pydantic",
+          "rich",
+          "sentry-sdk",
+          "tomli",
+          "typer"
+        ]
+      }
+    },
+    {
+      "id": "E5",
+      "kind": "file",
+      "title": "Top-level structure",
+      "text": "The repository is organized into these top-level paths: src (25), output (10), .obsidian (4), tests (3), .github (1), .gitignore (1), .python-version (1), LICENSE (1).",
+      "quote": null,
+      "refs": [],
+      "strength": "deterministic",
+      "keywords": [
+        "architecture",
+        "directories",
+        "structure",
+        "modules"
+      ],
+      "meta": {
+        "top_level": {
+          ".github": 1,
+          ".gitignore": 1,
+          ".obsidian": 4,
+          ".python-version": 1,
+          "LICENSE": 1,
+          "PLAN.md": 1,
+          "README.md": 1,
+          "benchmarks": 1,
+          "output": 10,
+          "pyproject.toml": 1,
+          "src": 25,
+          "tests": 3
+        }
+      }
+    },
+    {
+      "id": "E6",
+      "kind": "test",
+      "title": "3 test-related files",
+      "text": "The repository contains test-related files: tests/test_ollama_client.py, tests/test_readme.py, tests/test_scout.py.",
+      "quote": null,
+      "refs": [
+        {
+          "path": "tests/test_ollama_client.py",
+          "lines": null,
+          "commit": null,
+          "url": null
+        },
+        {
+          "path": "tests/test_readme.py",
+          "lines": null,
+          "commit": null,
+          "url": null
+        },
+        {
+          "path": "tests/test_scout.py",
+          "lines": null,
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "tests",
+        "testing",
+        "smoke",
+        "verification",
+        "tests/test_ollama_client.py",
+        "tests/test_readme.py",
+        "tests/test_scout.py"
+      ],
+      "meta": {
+        "test_count": 3,
+        "test_files": [
+          "tests/test_ollama_client.py",
+          "tests/test_readme.py",
+          "tests/test_scout.py"
+        ]
+      }
+    },
+    {
+      "id": "E7",
+      "kind": "deploy",
+      "title": "Deployment configuration",
+      "text": "The repository contains deployment or CI files: .github/workflows/ci.yml.",
+      "quote": null,
+      "refs": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "lines": null,
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "deployment",
+        "docker",
+        "ci",
+        "deploy",
+        ".github/workflows/ci.yml"
+      ],
+      "meta": {
+        "deploy_files": [
+          ".github/workflows/ci.yml"
+        ]
+      }
+    },
+    {
+      "id": "E8",
+      "kind": "commit",
+      "title": "Commit on 2026-10-24",
+      "text": "Commit 2f2bfdd69d0b on 2026-10-24 has subject \"feat(monitoring): add Sentry error monitoring with MIT license\".",
+      "quote": "feat(monitoring): add Sentry error monitoring with MIT license",
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "2f2bfdd69d0b",
+          "url": null
+        }
+      ],
+      "strength": "commit",
+      "keywords": [
+        "feat",
+        "monitoring",
+        "add",
+        "sentry",
+        "error",
+        "mit",
+        "license"
+      ],
+      "meta": {
+        "commit": "2f2bfdd69d0b",
+        "date": "2026-10-24",
+        "subject": "feat(monitoring): add Sentry error monitoring with MIT license"
+      }
+    },
+    {
+      "id": "E9",
+      "kind": "commit",
+      "title": "Commit on 2026-10-24",
+      "text": "Commit d5c94b8e1cc0 on 2026-10-24 has subject \"feat(scout): add evidence-backed upgrade impact analysis\".",
+      "quote": "feat(scout): add evidence-backed upgrade impact analysis",
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "d5c94b8e1cc0",
+          "url": null
+        }
+      ],
+      "strength": "commit",
+      "keywords": [
+        "feat",
+        "scout",
+        "add",
+        "evidence-backed",
+        "upgrade",
+        "impact",
+        "analysis"
+      ],
+      "meta": {
+        "commit": "d5c94b8e1cc0",
+        "date": "2026-10-24",
+        "subject": "feat(scout): add evidence-backed upgrade impact analysis"
+      }
+    },
+    {
+      "id": "E10",
+      "kind": "commit",
+      "title": "Commit on 2026-10-23",
+      "text": "Commit f4b1d79a8b9f on 2026-10-23 has subject \"chore(demo): add precomputed nextjs-dashboard compile artifacts\".",
+      "quote": "chore(demo): add precomputed nextjs-dashboard compile artifacts",
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "f4b1d79a8b9f",
+          "url": null
+        }
+      ],
+      "strength": "commit",
+      "keywords": [
+        "chore",
+        "demo",
+        "add",
+        "precomputed",
+        "nextjs-dashboard",
+        "compile",
+        "artifacts"
+      ],
+      "meta": {
+        "commit": "f4b1d79a8b9f",
+        "date": "2026-10-23",
+        "subject": "chore(demo): add precomputed nextjs-dashboard compile artifacts"
+      }
+    },
+    {
+      "id": "E11",
+      "kind": "commit",
+      "title": "Commit on 2026-10-23",
+      "text": "Commit 95a5e02d4fd9 on 2026-10-23 has subject \"build(ci): add Python 3.10 TOML fallback and package CI\".",
+      "quote": "build(ci): add Python 3.10 TOML fallback and package CI",
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "95a5e02d4fd9",
+          "url": null
+        }
+      ],
+      "strength": "commit",
+      "keywords": [
+        "ci",
+        "add",
+        "python",
+        "10",
+        "toml",
+        "fallback",
+        "package"
+      ],
+      "meta": {
+        "commit": "95a5e02d4fd9",
+        "date": "2026-10-23",
+        "subject": "build(ci): add Python 3.10 TOML fallback and package CI"
+      }
+    },
+    {
+      "id": "E12",
+      "kind": "commit",
+      "title": "Commit on 2026-10-23",
+      "text": "Commit 11a198da3dc2 on 2026-10-23 has subject \"docs(plan): align roadmap with CLI MVP and README mode\".",
+      "quote": "docs(plan): align roadmap with CLI MVP and README mode",
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "11a198da3dc2",
+          "url": null
+        }
+      ],
+      "strength": "commit",
+      "keywords": [
+        "docs",
+        "plan",
+        "align",
+        "roadmap",
+        "cli",
+        "mvp",
+        "readme",
+        "mode"
+      ],
+      "meta": {
+        "commit": "11a198da3dc2",
+        "date": "2026-10-23",
+        "subject": "docs(plan): align roadmap with CLI MVP and README mode"
+      }
+    },
+    {
+      "id": "E13",
+      "kind": "commit",
+      "title": "Commit on 2026-10-23",
+      "text": "Commit 663805df8dd8 on 2026-10-23 has subject \"test(readme): cover evidence rendering and temp-session safety\".",
+      "quote": "test(readme): cover evidence rendering and temp-session safety",
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "663805df8dd8",
+          "url": null
+        }
+      ],
+      "strength": "commit",
+      "keywords": [
+        "test",
+        "readme",
+        "cover",
+        "evidence",
+        "rendering",
+        "temp-session",
+        "safety"
+      ],
+      "meta": {
+        "commit": "663805df8dd8",
+        "date": "2026-10-23",
+        "subject": "test(readme): cover evidence rendering and temp-session safety"
+      }
+    },
+    {
+      "id": "E14",
+      "kind": "commit",
+      "title": "Commit on 2026-10-23",
+      "text": "Commit a668d97ea8ad on 2026-10-23 has subject \"feat(core): implement evidence-backed compiler and README output\".",
+      "quote": "feat(core): implement evidence-backed compiler and README output",
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "a668d97ea8ad",
+          "url": null
+        }
+      ],
+      "strength": "commit",
+      "keywords": [
+        "feat",
+        "core",
+        "implement",
+        "evidence-backed",
+        "compiler",
+        "readme",
+        "output"
+      ],
+      "meta": {
+        "commit": "a668d97ea8ad",
+        "date": "2026-10-23",
+        "subject": "feat(core): implement evidence-backed compiler and README output"
+      }
+    },
+    {
+      "id": "E15",
+      "kind": "commit",
+      "title": "Commit on 2026-10-23",
+      "text": "Commit e8450945be9e on 2026-10-23 has subject \"Refactor code structure for improved readability and maintainability\".",
+      "quote": "Refactor code structure for improved readability and maintainability",
+      "refs": [
+        {
+          "path": null,
+          "lines": null,
+          "commit": "e8450945be9e",
+          "url": null
+        }
+      ],
+      "strength": "commit",
+      "keywords": [
+        "refactor",
+        "structure",
+        "improved",
+        "readability",
+        "maintainability"
+      ],
+      "meta": {
+        "commit": "e8450945be9e",
+        "date": "2026-10-23",
+        "subject": "Refactor code structure for improved readability and maintainability"
+      }
+    },
+    {
+      "id": "E16",
+      "kind": "code",
+      "title": "Source: src/doxify/cli.py",
+      "text": "src/doxify/cli.py defines _default_output, _default_scout_output, _read_draft, _warn_cloud, doctor, scan.",
+      "quote": "def _default_output(repo: Path) -> Path: stamp = datetime.now().strftime(\"%Y%m%d-%H%M%S\") return Path.cwd() / \"doxify-out\" / f\"{repo.name}-{stamp}\" def _default_scout_output(package: str, from_version: str, to_version: str) -> Path: stamp = datetime.now().strftime(\"%Y%m%d-%H%M%S\") safe_package = re.sub(r\"[^A-Za-z0-9_.-]+\", \"-\", package).strip(\"-\") or \"package\" safe_from = re.sub(r\"[^A-Za-z0-9_.-]+\", \"-\", from_version).strip(\"-\") or \"from\" safe_to = re.sub(r\"[^A-Za-z0-9_.-]+\", \"-\", to_version).strip(\"-\") or \"to\" return ( Path.cwd() / \"doxify-out\" / f\"scout-{safe_package}-{safe_from}-to-{safe_to}-{stamp}\" )",
+      "refs": [
+        {
+          "path": "src/doxify/cli.py",
+          "lines": "48-66",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "cli",
+        "py",
+        "default_output",
+        "default_scout_output",
+        "read_draft",
+        "warn_cloud",
+        "doctor",
+        "scan"
+      ],
+      "meta": {
+        "path": "src/doxify/cli.py",
+        "symbols": [
+          "_default_output",
+          "_default_scout_output",
+          "_read_draft",
+          "_warn_cloud",
+          "doctor",
+          "scan",
+          "compile",
+          "on_stage",
+          "readme",
+          "scout"
+        ],
+        "line_start": 48,
+        "line_end": 66
+      }
+    },
+    {
+      "id": "E17",
+      "kind": "code",
+      "title": "Source: src/doxify/models.py",
+      "text": "src/doxify/models.py defines EvidenceKind, EvidenceStrength, ClaimStatus, EvidenceRef, EvidenceCard, CommitInfo.",
+      "quote": "class EvidenceKind(str, Enum): METRIC = \"metric\" STACK = \"stack\" FILE = \"file\" CODE = \"code\" COMMIT = \"commit\" TEST = \"test\" DEPLOY = \"deploy\" README = \"readme\" ATTESTED = \"attested\" class EvidenceStrength(str, Enum): DETERMINISTIC = \"deterministic\" CODE = \"code\" COMMIT = \"commit\" README = \"readme\"",
+      "refs": [
+        {
+          "path": "src/doxify/models.py",
+          "lines": "10-28",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "models",
+        "py",
+        "evidencekind",
+        "evidencestrength",
+        "claimstatus",
+        "evidenceref",
+        "evidencecard",
+        "commitinfo"
+      ],
+      "meta": {
+        "path": "src/doxify/models.py",
+        "symbols": [
+          "EvidenceKind",
+          "EvidenceStrength",
+          "ClaimStatus",
+          "EvidenceRef",
+          "EvidenceCard",
+          "CommitInfo",
+          "RepoSummary",
+          "ScanResult",
+          "Claim",
+          "CaseStudySentence"
+        ],
+        "line_start": 10,
+        "line_end": 28
+      }
+    },
+    {
+      "id": "E18",
+      "kind": "code",
+      "title": "Source: src/doxify/__init__.py",
+      "text": "src/doxify/__init__.py contains 3 lines.",
+      "quote": "from .cli import main __all__ = [\"main\"]",
+      "refs": [
+        {
+          "path": "src/doxify/__init__.py",
+          "lines": "1-3",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "init__",
+        "py"
+      ],
+      "meta": {
+        "path": "src/doxify/__init__.py",
+        "symbols": [],
+        "line_start": 1,
+        "line_end": 3
+      }
+    },
+    {
+      "id": "E19",
+      "kind": "code",
+      "title": "Source: src/doxify/__main__.py",
+      "text": "src/doxify/__main__.py contains 4 lines.",
+      "quote": "from .cli import main if __name__ == \"__main__\": main()",
+      "refs": [
+        {
+          "path": "src/doxify/__main__.py",
+          "lines": "1-4",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "main__",
+        "py"
+      ],
+      "meta": {
+        "path": "src/doxify/__main__.py",
+        "symbols": [],
+        "line_start": 1,
+        "line_end": 4
+      }
+    },
+    {
+      "id": "E20",
+      "kind": "code",
+      "title": "Source: src/doxify/claims.py",
+      "text": "src/doxify/claims.py defines extract_claims, parse_citations, _paragraphs, _sentences, _is_preamble, _gap_question.",
+      "quote": "def extract_claims(section_id: str, body: str, *, start_index: int = 1) -> list[Claim]: claims: list[Claim] = [] for paragraph in _paragraphs(body): for sentence in _sentences(paragraph): text = compact_whitespace(sentence) if not text or _is_preamble(text): continue evidence_ids = list(dict.fromkeys(CITATION_RE.findall(text))) is_gap = bool(GAP_RE.search(text)) clean_text = compact_whitespace(GAP_RE.sub(\"\", text)) status = ClaimStatus.NEEDS_EVIDENCE gap_question = None if is_gap or not evidence_ids: gap_question = _gap_question(clean_text) claims.append( Claim(",
+      "refs": [
+        {
+          "path": "src/doxify/claims.py",
+          "lines": "17-35",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "claims",
+        "py",
+        "extract_claims",
+        "parse_citations",
+        "paragraphs",
+        "sentences",
+        "is_preamble",
+        "gap_question"
+      ],
+      "meta": {
+        "path": "src/doxify/claims.py",
+        "symbols": [
+          "extract_claims",
+          "parse_citations",
+          "_paragraphs",
+          "_sentences",
+          "_is_preamble",
+          "_gap_question"
+        ],
+        "line_start": 17,
+        "line_end": 35
+      }
+    },
+    {
+      "id": "E21",
+      "kind": "code",
+      "title": "Source: src/doxify/console.py",
+      "text": "src/doxify/console.py defines stage_progress, print_scan_summary, print_compile_summary, print_readme_summary, print_scout_summary, print_repo.",
+      "quote": "def stage_progress(): return Progress( SpinnerColumn(), TextColumn(\"[progress.description]{task.description}\"), TimeElapsedColumn(), console=console, transient=False, ) def print_scan_summary(result: ScanResult, output: Path) -> None: table = Table(title=\"Scan complete\", show_header=False) table.add_column(\"Field\", style=\"cyan\") table.add_column(\"Value\") table.add_row(\"Repository\", result.repo.name) table.add_row(\"Commits\", str(result.repo.commit_count)) table.add_row(",
+      "refs": [
+        {
+          "path": "src/doxify/console.py",
+          "lines": "14-32",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "console",
+        "py",
+        "stage_progress",
+        "print_scan_summary",
+        "print_compile_summary",
+        "print_readme_summary",
+        "print_scout_summary",
+        "print_repo"
+      ],
+      "meta": {
+        "path": "src/doxify/console.py",
+        "symbols": [
+          "stage_progress",
+          "print_scan_summary",
+          "print_compile_summary",
+          "print_readme_summary",
+          "print_scout_summary",
+          "print_repo",
+          "error"
+        ],
+        "line_start": 14,
+        "line_end": 32
+      }
+    },
+    {
+      "id": "E22",
+      "kind": "code",
+      "title": "Source: src/doxify/defense.py",
+      "text": "src/doxify/defense.py defines build_defense, _parse, _fallback.",
+      "quote": "def build_defense( client: OllamaClient | None, sections: list[CaseStudySection], claims: list[Claim], evidence: list[EvidenceCard], *, repo_name: str, use_model: bool = True, ) -> list[DefenseQuestion]: usable = [ claim for claim in claims if claim.status in {ClaimStatus.VERIFIED, ClaimStatus.ATTESTED} ] if not usable: return []",
+      "refs": [
+        {
+          "path": "src/doxify/defense.py",
+          "lines": "14-32",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "defense",
+        "py",
+        "build_defense",
+        "parse",
+        "fallback"
+      ],
+      "meta": {
+        "path": "src/doxify/defense.py",
+        "symbols": [
+          "build_defense",
+          "_parse",
+          "_fallback"
+        ],
+        "line_start": 14,
+        "line_end": 32
+      }
+    },
+    {
+      "id": "E23",
+      "kind": "code",
+      "title": "Source: src/doxify/errors.py",
+      "text": "src/doxify/errors.py defines DoxifyError, RepoError, SessionError, ModelError, GenerationError, ScoutError.",
+      "quote": "class DoxifyError(Exception): \"\"\"Base class for expected Doxify failures.\"\"\" class RepoError(DoxifyError): \"\"\"The selected path is not a usable local git repository.\"\"\" class SessionError(DoxifyError): \"\"\"A session directory is missing or invalid.\"\"\" class ModelError(DoxifyError): \"\"\"The configured Ollama local or cloud endpoint is unavailable.\"\"\" class GenerationError(DoxifyError): \"\"\"A section could not be generated or parsed.\"\"\"",
+      "refs": [
+        {
+          "path": "src/doxify/errors.py",
+          "lines": "1-19",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "errors",
+        "py",
+        "doxifyerror",
+        "repoerror",
+        "sessionerror",
+        "modelerror",
+        "generationerror",
+        "scouterror"
+      ],
+      "meta": {
+        "path": "src/doxify/errors.py",
+        "symbols": [
+          "DoxifyError",
+          "RepoError",
+          "SessionError",
+          "ModelError",
+          "GenerationError",
+          "ScoutError"
+        ],
+        "line_start": 1,
+        "line_end": 19
+      }
+    },
+    {
+      "id": "E24",
+      "kind": "code",
+      "title": "Source: src/doxify/evidence.py",
+      "text": "src/doxify/evidence.py defines _SourceFile, _Factory, __init__, add, build_evidence, _identity_cards.",
+      "quote": "@dataclass class _SourceFile: relative: str text: str lines: list[str] class _Factory: def __init__(self, max_cards: int) -> None: self.max_cards = max_cards self.cards: list[EvidenceCard] = [] def add( self, *, kind: EvidenceKind, title: str, text: str,",
+      "refs": [
+        {
+          "path": "src/doxify/evidence.py",
+          "lines": "54-72",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "evidence",
+        "py",
+        "sourcefile",
+        "factory",
+        "init__",
+        "add",
+        "build_evidence",
+        "identity_cards"
+      ],
+      "meta": {
+        "path": "src/doxify/evidence.py",
+        "symbols": [
+          "_SourceFile",
+          "_Factory",
+          "__init__",
+          "add",
+          "build_evidence",
+          "_identity_cards",
+          "_readme_card",
+          "_manifest_cards",
+          "_directory_card",
+          "_read_sources"
+        ],
+        "line_start": 54,
+        "line_end": 72
+      }
+    },
+    {
+      "id": "E25",
+      "kind": "code",
+      "title": "Source: src/doxify/exporter.py",
+      "text": "src/doxify/exporter.py defines write_case_study, write_defense, write_claims_json, write_verification_json, write_sections_json, write_defense_json.",
+      "quote": "def write_case_study( output: Path, repo: RepoSummary, sections: list[CaseStudySection], evidence: list[EvidenceCard], summary: CompileSummary, claims: list[Claim] | None = None, ) -> Path: path = output / \"case-study.md\" lines = [ f\"# {repo.name}: an evidence-backed case study\", \"\", \"> Compiled with Doxify. Citations point to the evidence appendix.\", \"> Unverified statements are marked [needs evidence]; author context is marked [attested].\", \"\", ] claims_by_id = {claim.id: claim for claim in (claims or [])}",
+      "refs": [
+        {
+          "path": "src/doxify/exporter.py",
+          "lines": "19-37",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "exporter",
+        "py",
+        "write_case_study",
+        "write_defense",
+        "write_claims_json",
+        "write_verification_json",
+        "write_sections_json",
+        "write_defense_json"
+      ],
+      "meta": {
+        "path": "src/doxify/exporter.py",
+        "symbols": [
+          "write_case_study",
+          "write_defense",
+          "write_claims_json",
+          "write_verification_json",
+          "write_sections_json",
+          "write_defense_json",
+          "write_evidence_json",
+          "_format_refs"
+        ],
+        "line_start": 19,
+        "line_end": 37
+      }
+    },
+    {
+      "id": "E26",
+      "kind": "code",
+      "title": "Source: src/doxify/generator.py",
+      "text": "src/doxify/generator.py defines GeneratedSection, generate_section, template_section, _valid, _clean.",
+      "quote": "@dataclass class GeneratedSection: body: str fallback_used: bool error: str | None = None def generate_section( client: OllamaClient, spec: SectionSpec, cards: list[EvidenceCard], *, repo_name: str, role: str | None = None, draft: str | None = None, ) -> GeneratedSection: messages = section_messages( spec,",
+      "refs": [
+        {
+          "path": "src/doxify/generator.py",
+          "lines": "12-30",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "generator",
+        "py",
+        "generatedsection",
+        "generate_section",
+        "template_section",
+        "valid",
+        "clean"
+      ],
+      "meta": {
+        "path": "src/doxify/generator.py",
+        "symbols": [
+          "GeneratedSection",
+          "generate_section",
+          "template_section",
+          "_valid",
+          "_clean"
+        ],
+        "line_start": 12,
+        "line_end": 30
+      }
+    },
+    {
+      "id": "E27",
+      "kind": "code",
+      "title": "Source: src/doxify/git_repo.py",
+      "text": "src/doxify/git_repo.py defines RepoContext, open_repo, collect_repo_context, _tracked_files, _recent_commits, _head_info.",
+      "quote": "@dataclass class RepoContext: repo: Repo root: Path summary: RepoSummary commits: list[CommitInfo] tracked_files: list[str] def open_repo(path: Path, *, allow_tool_root: bool = False) -> Repo: try: root = path.expanduser().resolve(strict=True) except OSError as exc: raise RepoError(f\"Repository path does not exist: {path}\") from exc if not root.is_dir(): raise RepoError(f\"Repository path is not a directory: {root}\") if root == Path(root.anchor):",
+      "refs": [
+        {
+          "path": "src/doxify/git_repo.py",
+          "lines": "22-40",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "git_repo",
+        "py",
+        "repocontext",
+        "open_repo",
+        "collect_repo_context",
+        "tracked_files",
+        "recent_commits",
+        "head_info"
+      ],
+      "meta": {
+        "path": "src/doxify/git_repo.py",
+        "symbols": [
+          "RepoContext",
+          "open_repo",
+          "collect_repo_context",
+          "_tracked_files",
+          "_recent_commits",
+          "_head_info",
+          "_history_summary"
+        ],
+        "line_start": 22,
+        "line_end": 40
+      }
+    },
+    {
+      "id": "E28",
+      "kind": "code",
+      "title": "Source: src/doxify/monitoring.py",
+      "text": "src/doxify/monitoring.py defines init_monitoring, report_exception, _guess_release.",
+      "quote": "def init_monitoring() -> bool: \"\"\"Initialize Sentry error monitoring and tracing. The DSN may be overridden with SENTRY_DSN. Returns True when monitoring is active. \"\"\" global _client dsn = os.environ.get(\"SENTRY_DSN\", DSN) if not dsn: return False _client = sentry_sdk.init( dsn=dsn, traces_sample_rate=1.0, release=_guess_release(), environment=os.environ.get(\"SENTRY_ENVIRONMENT\", \"production\"), project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__))), )",
+      "refs": [
+        {
+          "path": "src/doxify/monitoring.py",
+          "lines": "10-28",
+          "commit": null,
+          "url": null
+        }
+      ],
+      "strength": "code",
+      "keywords": [
+        "src",
+        "doxify",
+        "monitoring",
+        "py",
+        "init_monitoring",
+        "report_exception",
+        "guess_release"
+      ],
+      "meta": {
+        "path": "src/doxify/monitoring.py",
+        "symbols": [
+          "init_monitoring",
+          "report_exception",
+          "_guess_release"
+        ],
+        "line_start": 10,
+        "line_end": 28
+      }
+    }
+  ]
+}

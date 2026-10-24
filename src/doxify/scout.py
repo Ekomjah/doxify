@@ -26,6 +26,7 @@ from .models import (
     ScoutSummary,
     SessionManifest,
 )
+from .monitoring import http_span
 from .ollama_client import OllamaClient
 from .paths import is_secret, is_skippable, read_text_limited
 from .prompts import scout_batch_messages
@@ -347,7 +348,9 @@ def _http_get(
         request_headers.update(headers)
     request = Request(url, headers=request_headers)
     try:
-        with urlopen(request, timeout=timeout) as response:
+        with http_span(label, url) as span, urlopen(request, timeout=timeout) as response:
+            if span is not None:
+                span.set_data("http.status_code", response.status)
             data = response.read(max_bytes + 1)
     except HTTPError as exc:
         raise ScoutError(f"{label} returned HTTP {exc.code}.") from exc

@@ -8,6 +8,8 @@ The core pipeline is deterministic: scan the repository, build evidence cards,
 generate prose from that evidence, verify every claim, and export the result.
 The model only writes; the compiler checks.
 
+<!-- doxify-attested: project description and positioning -->
+
 ## Install
 
 Requires Python 3.10+ and git.
@@ -18,6 +20,8 @@ uv run doxify --help
 ```
 
 Or install the package and run `doxify` directly.
+
+<!-- doxify-attested: installation instructions -->
 
 ## Local mode (default)
 
@@ -30,6 +34,8 @@ ollama pull gemma3:1b
 doxify doctor
 doxify readme /path/to/repo
 ```
+
+<!-- doxify-attested: local setup and privacy behavior -->
 
 ## Cloud mode (no local Ollama install)
 
@@ -59,6 +65,8 @@ Configuration:
 
 Precedence is flag, then environment variable, then default.
 
+<!-- doxify-attested: cloud setup, privacy, and billing guidance -->
+
 ## Commands
 
 ```bash
@@ -67,12 +75,32 @@ doxify scan REPO
 doxify compile REPO
 doxify readme REPO [--output PATH]
 doxify scout PACKAGE FROM TO [--repo PATH]
-doxify verify SESSION
+doxify verify SESSION [--artifact PATH] [--fail-on STATUSES]
 doxify attest SESSION --claim C1 --answer "..."
 doxify export SESSION
 ```
 
 `scan`, `verify`, `attest`, and `export` never call a model and work offline.
+
+`doxify verify` exits non-zero when a claim needs evidence or is rejected. Use
+`--fail-on none` to report without failing, `--check` to avoid rewriting session
+files, and `--artifact` with `--evidence` to audit a README or case study
+directly.
+
+<!-- doxify-attested: command reference -->
+
+## Project facts
+
+Doxify is written in Python. The project declares runtime dependencies including
+`gitpython`, `ollama`, `pydantic`, `rich`, `sentry-sdk`, `tomli`, and `typer`.
+
+The repository is organized into top-level paths including `src`, `tests`,
+`output`, and `.github`.
+
+The repository contains test-related files at `tests/test_readme.py`. CI is
+defined in `.github/workflows/ci.yml`.
+
+<!-- doxify-evidence: E2 E4 E5 E6 E7 -->
 
 ## Scout upgrades
 
@@ -88,9 +116,38 @@ and `--expect FILE` to replay a known breaking-change list. Scout writes
 `scout.md`, `scout.json`, `release-notes.json`, and `manifest.json`; it never
 modifies the scanned repository.
 
+<!-- doxify-attested: scout usage instructions -->
+
+## Verify in CI
+
+The composite action runs the same deterministic checker. Unmarked sections
+fail; sections marked `doxify-attested` are author-owned and pass unless
+`attested` is added to `fail-on`. Point it at an evidence-marked README:
+
+```yaml
+- uses: Ekomjah/doxify@main
+  with:
+    artifact: README.md
+    evidence: docs/self-audit/evidence.json
+    fail-on: needs_evidence,rejected
+```
+
+Or point it at a compile session to fail on unresolved case-study claims:
+
+```yaml
+- uses: Ekomjah/doxify@main
+  with:
+    session: path/to/session
+    fail-on: needs_evidence,rejected
+```
+
+<!-- doxify-attested: CI usage instructions -->
+
 ## Development
 
 ```bash
 uv run pytest -q
 uv run ruff check .
 ```
+
+<!-- doxify-attested: contributor instructions -->

@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import logging
 import os
+import time
 from typing import Any, Literal
 
 from ollama import Client, RequestError, ResponseError
 
 from .errors import ModelError
+from .log import log_event
+from .monitoring import model_span, record_model_usage
 
 DEFAULT_HOST = "http://127.0.0.1:11434"
 DEFAULT_MODEL = "gemma3:1b"
@@ -127,16 +131,62 @@ class OllamaClient:
         }
         if not self.is_cloud:
             payload["keep_alive"] = "10m"
+        started = time.perf_counter()
         try:
-            response = self._client.chat(**payload)
+            with model_span(
+                provider=self.provider,
+                model=self.model,
+                temperature=temperature,
+                max_tokens=num_predict,
+            ) as span:
+                response = self._client.chat(**payload)
+                duration_ms = (time.perf_counter() - started) * 1000
+                prompt_tokens = getattr(response, "prompt_eval_count", None)
+                completion_tokens = getattr(response, "eval_count", None)
+                total_tokens = (
+                    (prompt_tokens or 0) + (completion_tokens or 0)
+                    if prompt_tokens is not None or completion_tokens is not None
+                    else None
+                )
+                record_model_usage(
+                    span,
+                    prompt_tokens=prompt_tokens,
+                    completion_tokens=completion_tokens,
+                    total_tokens=total_tokens,
+                    duration_ms=duration_ms,
+                )
         except ResponseError as exc:
+            log_event(
+                logging.WARNING,
+                "model.error",
+                provider=self.provider,
+                model=self.model,
+                status="response_error",
+            )
             raise ModelError(self._response_error(exc)) from exc
         except (RequestError, ConnectionError, OSError) as exc:
+            log_event(
+                logging.WARNING,
+                "model.error",
+                provider=self.provider,
+                model=self.model,
+                status="connection_error",
+            )
             raise ModelError(self._connection_error()) from exc
 
         content = response.message.content
         if not content or not content.strip():
             raise ModelError(f"{self.label} returned an empty response.")
+        log_event(
+            logging.INFO,
+            "model.response",
+            provider=self.provider,
+            model=self.model,
+            duration_ms=round(duration_ms, 1),
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            total_tokens=total_tokens,
+        )
         return content.strip()
 
     def _connection_error(self) -> str:

@@ -1,0 +1,69 @@
+name: Doxify Verify
+description: Verify Doxify sessions or evidence-marked READMEs and fail on unsupported claims.
+author: Ekomjah
+branding:
+  icon: shield
+  color: green
+
+inputs:
+  session:
+    description: Compile session directory to verify.
+    required: false
+    default: ""
+  artifact:
+    description: README or case study file to audit.
+    required: false
+    default: ""
+  evidence:
+    description: Evidence JSON for artifact-only verification.
+    required: false
+    default: ""
+  fail-on:
+    description: Comma-separated claim statuses that fail the check.
+    required: false
+    default: needs_evidence,rejected
+  python-version:
+    description: Python version used to run Doxify.
+    required: false
+    default: "3.10"
+  working-directory:
+    description: Directory used to resolve session, artifact, and evidence paths.
+    required: false
+    default: "."
+
+runs:
+  using: composite
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install Doxify
+      shell: bash
+      run: uv sync --frozen --no-dev --project "$GITHUB_ACTION_PATH"
+
+    - name: Verify
+      id: verify
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        SENTRY_DSN: ""
+        INPUT_SESSION: ${{ inputs.session }}
+        INPUT_ARTIFACT: ${{ inputs.artifact }}
+        INPUT_EVIDENCE: ${{ inputs.evidence }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+      run: |
+        set -euo pipefail
+        args=(verify)
+        if [[ -n "$INPUT_SESSION" ]]; then
+          args+=("$INPUT_SESSION")
+        fi
+        if [[ -n "$INPUT_ARTIFACT" ]]; then
+          args+=(--artifact "$INPUT_ARTIFACT")
+        fi
+        if [[ -n "$INPUT_EVIDENCE" ]]; then
+          args+=(--evidence "$INPUT_EVIDENCE")
+        fi
+        args+=(--fail-on "$INPUT_FAIL_ON" --check)
+        uv run --project "$GITHUB_ACTION_PATH" --no-sync doxify "${args[@]}"

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import logging
 import re
 import shutil
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -24,8 +26,17 @@ from .console import (
     stage_progress,
 )
 from .errors import DoxifyError
+from .log import configure_logging, log_event
 from .models import ClaimStatus, CompileSummary, ScanResult
-from .monitoring import init_monitoring, report_exception
+from .monitoring import (
+    begin_stage,
+    command_transaction,
+    cron_monitor,
+    flush_monitoring,
+    init_monitoring,
+    monitoring_status,
+    span,
+)
 from .ollama_client import DEFAULT_MODEL, OllamaClient
 from .pipeline import (
     attest_session,
@@ -37,6 +48,7 @@ from .pipeline import (
     verify_session,
 )
 from .scout import scout_repo
+from .selfcheck import SelfCheckError, run_self_check
 
 app = typer.Typer(
     no_args_is_help=True,
@@ -62,6 +74,22 @@ def _default_scout_output(package: str, from_version: str, to_version: str) -> P
         / "doxify-out"
         / f"scout-{safe_package}-{safe_from}-to-{safe_to}-{stamp}"
     )
+
+
+def _command_name() -> str:
+    for argument in sys.argv[1:]:
+        if not argument.startswith("-"):
+            return argument
+    return "help"
+
+
+def _stage_callback(progress, task):
+    def on_stage(stage: str, detail: str) -> None:
+        progress.update(task, description=detail)
+        log_event(logging.INFO, "stage.start", stage=stage)
+        begin_stage(stage)
+
+    return on_stage
 
 
 def _read_draft(path: Path | None) -> str | None:
@@ -108,6 +136,16 @@ def doctor(
     git_path = shutil.which("git")
     table.add_row("git", "ok" if git_path else "missing", git_path or "install git")
     table.add_row("Python", "ok", "local CLI runtime")
+    status = monitoring_status()
+    table.add_row(
+        "Monitoring",
+        "enabled" if status.enabled else "disabled",
+        (
+            f"opt-in ({status.environment})"
+            if status.enabled
+            else "set SENTRY_DSN to opt in"
+        ),
+    )
 
     try:
         client = OllamaClient(model=model, host=host, provider=provider)
@@ -131,6 +169,60 @@ def doctor(
         raise typer.Exit(code=1)
 
 
+@app.command(name="self-check")
+def self_check(
+    json_output: bool = typer.Option(False, "--json", help="Print machine-readable JSON."),
+    check_model: bool = typer.Option(
+        False, "--check-model", help="Also check the configured Ollama model."
+    ),
+    model: str | None = typer.Option(None, help="Model to check with --check-model."),
+    host: str | None = typer.Option(None, help="Ollama endpoint URL."),
+    provider: str | None = typer.Option(
+        None,
+        "--provider",
+        help="Inference backend: local (default) or cloud.",
+    ),
+    monitor_slug: str | None = typer.Option(
+        None,
+        "--monitor-slug",
+        help="Sentry cron monitor slug. Defaults to SENTRY_MONITOR_SLUG.",
+    ),
+) -> None:
+    """Run lightweight health checks, optionally with a Sentry cron check-in."""
+    client = None
+    if check_model:
+        try:
+            client = OllamaClient(model=model, host=host, provider=provider)
+        except DoxifyError as exc:
+            error(str(exc))
+            raise typer.Exit(code=1) from exc
+
+    result = None
+    try:
+        with cron_monitor(monitor_slug):
+            result = run_self_check(client=client)
+            if not result.ok:
+                raise SelfCheckError("Self-check failed.")
+    except SelfCheckError as exc:
+        if json_output and result is not None:
+            typer.echo(result.to_json())
+        else:
+            error(str(exc))
+        raise typer.Exit(code=1) from exc
+
+    if json_output:
+        typer.echo(result.to_json())
+        return
+
+    table = Table(title="Doxify self-check", show_header=True)
+    table.add_column("Check", style="cyan")
+    table.add_column("Status")
+    table.add_column("Detail")
+    for check in result.checks:
+        table.add_row(check.name, "ok" if check.ok else "failed", check.detail)
+    console.print(table)
+
+
 @app.command()
 def scan(
     repo: Path = typer.Argument(..., exists=True, file_okay=False, resolve_path=True),
@@ -141,12 +233,15 @@ def scan(
     """Scan a repository and write deterministic evidence without calling Ollama."""
     output = out or _default_output(repo)
     try:
-        scanned_repo, evidence, output, _ = scan_only(
-            repo,
-            output,
-            model=model,
-            force=force,
-        )
+        with span("scan.repository", op="scan") as current:
+            scanned_repo, evidence, output, _ = scan_only(
+                repo,
+                output,
+                model=model,
+                force=force,
+            )
+            if current is not None:
+                current.set_measurement("doxify.scan.cards", len(evidence))
         print_scan_summary(ScanResult(repo=scanned_repo, evidence=evidence), output)
     except DoxifyError as exc:
         error(str(exc))
@@ -184,8 +279,7 @@ def compile(
         with stage_progress() as progress:
             task = progress.add_task("Starting", total=None)
 
-            def on_stage(_stage: str, detail: str) -> None:
-                progress.update(task, description=detail)
+            on_stage = _stage_callback(progress, task)
 
             result = compile_repo(
                 repo,
@@ -244,8 +338,7 @@ def readme(
         with stage_progress() as progress:
             task = progress.add_task("Starting", total=None)
 
-            def on_stage(_stage: str, detail: str) -> None:
-                progress.update(task, description=detail)
+            on_stage = _stage_callback(progress, task)
 
             result = readme_repo(
                 repo,
@@ -343,8 +436,7 @@ def scout(
         with stage_progress() as progress:
             task = progress.add_task("Starting", total=None)
 
-            def on_stage(_stage: str, detail: str) -> None:
-                progress.update(task, description=detail)
+            on_stage = _stage_callback(progress, task)
 
             result = scout_repo(
                 repo_path,
@@ -419,18 +511,19 @@ def verify(
     session_report = None
     artifact_report = None
     try:
-        if session is not None:
-            session_report = verify_session(session, write=not check)
-        if artifact is not None:
-            if evidence is not None:
-                scan = load_evidence_file(evidence)
-            elif session is not None:
-                scan = load_evidence_file(session / "evidence.json")
-            else:
-                raise typer.BadParameter(
-                    "--artifact requires --evidence when SESSION is omitted."
-                )
-            artifact_report = audit_artifact(artifact, scan.evidence)
+        with span("verify.claims", op="verify"):
+            if session is not None:
+                session_report = verify_session(session, write=not check)
+            if artifact is not None:
+                if evidence is not None:
+                    scan = load_evidence_file(evidence)
+                elif session is not None:
+                    scan = load_evidence_file(session / "evidence.json")
+                else:
+                    raise typer.BadParameter(
+                        "--artifact requires --evidence when SESSION is omitted."
+                    )
+                artifact_report = audit_artifact(artifact, scan.evidence)
     except DoxifyError as exc:
         error(str(exc))
         raise typer.Exit(code=1) from exc
@@ -463,7 +556,8 @@ def attest(
     """Attach author context to a claim and label it ATTESTED."""
     context = answer or typer.prompt("Author context")
     try:
-        report = attest_session(session, claim, context)
+        with span("attest.claim", op="verify"):
+            report = attest_session(session, claim, context)
         _print_verification(report.summary)
     except DoxifyError as exc:
         error(str(exc))
@@ -476,7 +570,8 @@ def export(
 ) -> None:
     """Re-render Markdown and JSON artifacts from an existing session."""
     try:
-        output = export_session(session)
+        with span("export.write", op="export"):
+            output = export_session(session)
         console.print(f"[green]Exported[/green] {output}")
     except DoxifyError as exc:
         error(str(exc))
@@ -527,14 +622,16 @@ def _print_artifact_verification(
 
 
 def main() -> None:
-    if init_monitoring():
-        try:
+    configure_logging()
+    init_monitoring()
+    command = _command_name()
+    log_event(logging.INFO, "cli.start", command=command)
+    try:
+        with command_transaction(command):
             app()
-        except Exception as exc:
-            report_exception(exc)
-            raise
-    else:
-        app()
+    finally:
+        log_event(logging.INFO, "cli.finish", command=command)
+        flush_monitoring()
 
 
 if __name__ == "__main__":

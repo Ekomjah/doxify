@@ -41,3 +41,35 @@ jobs:
           name: dist
           path: dist/
           if-no-files-found: error
+
+  verify:
+    name: Verify evidence-backed claims
+    runs-on: ubuntu-latest
+    env:
+      SENTRY_DSN: ""
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify self-audit README
+        uses: ./
+        with:
+          artifact: README.md
+          evidence: docs/self-audit/evidence.json
+          fail-on: needs_evidence,rejected
+
+      - name: Verify unresolved case study (expected failure)
+        id: negative
+        continue-on-error: true
+        uses: ./
+        with:
+          artifact: output/next-dashboard/case-study/case-study.md
+          evidence: output/next-dashboard/case-study/evidence.json
+          fail-on: needs_evidence,rejected
+
+      - name: Assert unresolved case study fails
+        if: steps.negative.outcome != 'failure'
+        shell: bash
+        run: |
+          echo "::error::Expected the unresolved case study to fail verification."
+          exit 1

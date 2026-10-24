@@ -2,7 +2,7 @@
 
 > Working title: **Doxify**  
 > Tagline: **Portfolio case studies you can defend.**  
-> Status: CLI MVP implemented; Scout upgrade analysis implemented; opt-in Ollama Cloud inference added; hosted mode planned.
+> Status: CLI MVP implemented; Scout upgrade analysis implemented; opt-in Ollama Cloud inference and opt-in Sentry observability added; hosted mode planned.
 > Plan date: 2026-10-22.
 > Last implementation update: 2026-10-24.
 > Hackathon deadline: 2026-10-25, 11:59 PM PDT = 2026-10-26, 7:59 AM WAT.  
@@ -14,8 +14,8 @@
 > still the default; `--provider cloud` routes model calls to Ollama Cloud for
 > users who do not want to install Ollama locally. The FastAPI and Next.js
 > sections below describe the deferred hosted UI, not the current build.
-> Current commands: `doctor`, `scan`, `compile`, `readme`, `scout`, `verify`,
-> `attest`, and `export`.
+> Current commands: `doctor`, `self-check`, `scan`, `compile`, `readme`,
+> `scout`, `verify`, `attest`, and `export`.
 
 ---
 
@@ -68,7 +68,7 @@ The product thesis is simple:
 
 The demo project is `scholarship-mcp`, a working MCP server with 20 commits, 9 tools, 3 database models, 26 seeded scholarship records, and no README. That is the perfect before/after story: a real project with a real technical arc, but no written portfolio narrative.
 
-The current implementation is a Python 3.10 CLI built with Typer, Rich, Pydantic, GitPython, and a local `gemma3:1b` model through Ollama. Local inference remains the default: it reads a local repository, writes compile artifacts to a local session directory, and calls only the local Ollama server. Users without a local Ollama install can explicitly opt into Ollama Cloud with `--provider cloud` and `OLLAMA_API_KEY`; in that mode evidence cards are sent to Ollama Cloud's hosted model instead. The tool has no database, no telemetry, and no account system of its own.
+The current implementation is a Python 3.10 CLI built with Typer, Rich, Pydantic, GitPython, and a local `gemma3:1b` model through Ollama. Local inference remains the default: it reads a local repository, writes compile artifacts to a local session directory, and calls only the local Ollama server. Users without a local Ollama install can explicitly opt into Ollama Cloud with `--provider cloud` and `OLLAMA_API_KEY`; in that mode evidence cards are sent to Ollama Cloud's hosted model instead. The tool has no database and no account system of its own. Telemetry is off by default; users can opt into privacy-filtered Sentry errors, traces, and logs with an explicit `SENTRY_DSN` (see `docs/observability.md`).
 
 The hackathon submission is a brand-new repository. `scholarship-mcp` is only the input used for the demonstration; it is not the submitted project.
 
@@ -792,7 +792,7 @@ Unchanged constraints:
 - No database.
 - No cloud services in local mode; opt-in Ollama Cloud inference only.
 - No authentication beyond `OLLAMA_API_KEY` in cloud mode.
-- No telemetry.
+- No telemetry by default; opt-in Sentry observability requires an explicit `SENTRY_DSN`.
 - No Next.js API routes; FastAPI remains the only backend.
 
 Why this stack:
@@ -1888,7 +1888,7 @@ performance, user counts, or licensing that the evidence does not support.
 ### 16.1 Default local-first guarantees
 
 - API binds to `127.0.0.1`.
-- No telemetry.
+- Telemetry off by default; opt-in Sentry requires an explicit `SENTRY_DSN`.
 - No analytics.
 - No cloud API calls unless the user explicitly passes `--provider cloud` or sets `DOXIFY_PROVIDER=cloud`.
 - No GitHub OAuth.
@@ -2521,7 +2521,7 @@ Mitigation:
 Mitigation:
 
 - local-first architecture,
-- no telemetry,
+- telemetry off by default; opt-in Sentry requires an explicit `SENTRY_DSN`,
 - no upload in local mode,
 - explicit cloud warning before any upload,
 - secret skipping,
