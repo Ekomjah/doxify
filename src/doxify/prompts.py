@@ -105,6 +105,57 @@ def repair_messages(
     ]
 
 
+SCOUT_SYSTEM_PROMPT = """You are a release-note analyst working inside a compiler.
+
+Your job is to extract breaking changes from release notes, not to summarize
+the release or recommend an upgrade.
+
+Rules:
+- Only include changes that can break existing code or require a migration.
+- Every change must include a verbatim quote copied from the release notes.
+- Every change must include at least one exact API, identifier, package path,
+  or config key affected by the change.
+- Do not invent APIs, versions, migration steps, or quotes.
+- Do not include new features, bug fixes, performance improvements, or
+  deprecations unless they require a code change.
+- Ignore changes outside the requested package and version range.
+- Return at most 8 changes. Prefer changes that affect named APIs.
+- Keep each quote under 220 characters.
+- If there are no breaking changes, return {"changes": []}.
+- Return JSON only. Do not use Markdown fences or add an explanation.
+
+Return a JSON object with one key, "changes". Its value must be an array of
+strings. Each string must be one contiguous quote copied from the release
+notes. Do not wrap a quote in another object, rewrite it, or combine separate
+bullets. Return {"changes": []} when there are no breaking changes. Do not copy
+instructions or examples into the output.
+"""
+
+
+def scout_batch_messages(
+    package: str,
+    from_version: str,
+    to_version: str,
+    excerpt: str,
+) -> list[dict[str, str]]:
+    return [
+        {"role": "system", "content": SCOUT_SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": (
+                f"Package: {package}\n"
+                f"Upgrade: {from_version} -> {to_version}\n\n"
+                "The excerpts are separated by release headers. Do not copy the "
+                "headers into a quote.\n\n"
+                "Release notes excerpts:\n"
+                f"{excerpt[:11000]}\n\n"
+                "Return only breaking-change lines that affect this upgrade. "
+                "Copy each line exactly from the excerpt. Return JSON only."
+            ),
+        },
+    ]
+
+
 def defense_messages(
     repo_name: str,
     claims: list[dict[str, str]],

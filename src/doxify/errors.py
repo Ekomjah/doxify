@@ -11,8 +11,12 @@ class SessionError(DoxifyError):
 
 
 class ModelError(DoxifyError):
-    """Ollama is unavailable or the requested model is missing."""
+    """The configured Ollama local or cloud endpoint is unavailable."""
 
 
 class GenerationError(DoxifyError):
     """A section could not be generated or parsed."""
+
+
+class ScoutError(DoxifyError):
+    """Release notes could not be fetched, extracted, or matched."""

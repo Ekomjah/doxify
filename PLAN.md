@@ -2,18 +2,20 @@
 
 > Working title: **Doxify**  
 > Tagline: **Portfolio case studies you can defend.**  
-> Status: CLI MVP implemented; hosted mode and optional integrations planned.
+> Status: CLI MVP implemented; Scout upgrade analysis implemented; opt-in Ollama Cloud inference added; hosted mode planned.
 > Plan date: 2026-10-22.
-> Last implementation update: 2026-10-23.
+> Last implementation update: 2026-10-24.
 > Hackathon deadline: 2026-10-25, 11:59 PM PDT = 2026-10-26, 7:59 AM WAT.  
 > Target category: **Best Use of Gemma**.  
 > Demo input repo: `/home/ekomjah/Desktop/repos/scholarship-mcp`.
 
 > **Implementation status:** The working MVP is a local CLI in `src/doxify` using
-> Python 3.10, Typer, Rich, Pydantic, GitPython, and Ollama. The FastAPI and
-> Next.js sections below describe the deferred hosted UI, not the current build.
-> Current commands: `doctor`, `scan`, `compile`, `readme`, `verify`, `attest`,
-> and `export`.
+> Python 3.10, Typer, Rich, Pydantic, GitPython, and Ollama. Local inference is
+> still the default; `--provider cloud` routes model calls to Ollama Cloud for
+> users who do not want to install Ollama locally. The FastAPI and Next.js
+> sections below describe the deferred hosted UI, not the current build.
+> Current commands: `doctor`, `scan`, `compile`, `readme`, `scout`, `verify`,
+> `attest`, and `export`.
 
 ---
 
@@ -66,7 +68,7 @@ The product thesis is simple:
 
 The demo project is `scholarship-mcp`, a working MCP server with 20 commits, 9 tools, 3 database models, 26 seeded scholarship records, and no README. That is the perfect before/after story: a real project with a real technical arc, but no written portfolio narrative.
 
-The current implementation is a Python 3.10 CLI built with Typer, Rich, Pydantic, GitPython, and a local `gemma3:1b` model through Ollama. A future hosted mode may add FastAPI and Next.js, but the shipped MVP is local-first: it reads a local repository, writes compile artifacts to a local session directory, and calls only the local Ollama server. It has no database, no cloud API, no telemetry, and no account system.
+The current implementation is a Python 3.10 CLI built with Typer, Rich, Pydantic, GitPython, and a local `gemma3:1b` model through Ollama. Local inference remains the default: it reads a local repository, writes compile artifacts to a local session directory, and calls only the local Ollama server. Users without a local Ollama install can explicitly opt into Ollama Cloud with `--provider cloud` and `OLLAMA_API_KEY`; in that mode evidence cards are sent to Ollama Cloud's hosted model instead. The tool has no database, no telemetry, and no account system of its own.
 
 The hackathon submission is a brand-new repository. `scholarship-mcp` is only the input used for the demonstration; it is not the submitted project.
 
@@ -227,15 +229,15 @@ The product’s privacy promise depends on local inference:
 - the output may mention internal architecture,
 - the user may be offline.
 
-Using a cloud API would undermine the core story. `gemma3:1b` via Ollama is small enough to run on the target laptop and open enough to be inspectable and portable.
+Cloud inference is offered only as an explicit opt-in for users who cannot or do not want to install Ollama. The default remains `gemma3:1b` via local Ollama: it is small enough to run on the target laptop and open enough to be inspectable and portable. When `--provider cloud` is selected, the same Gemma-family workflow runs on Ollama Cloud (`gemma4:31b` by default).
 
-The submission should make this explicit:
+The default submission demo should make local mode explicit:
 
 - local model,
 - local repo,
-- no network calls,
-- no API keys,
-- no per-token cost.
+- no network calls by default,
+- no API keys in local mode,
+- no per-token cost in local mode.
 
 ### 4.4 What must be new
 
@@ -567,6 +569,53 @@ Content rules:
 - Do not claim tests pass, deployment, performance, user counts, or licensing
   without evidence.
 
+### 7.8 Scout upgrade analysis
+
+`doxify scout PACKAGE FROM TO --repo PATH` answers a narrower question than the
+README workflow: **what in this upgrade touches this repository?**
+
+Pipeline:
+
+1. Resolve the package ecosystem to a GitHub repository, for example
+   `react` → `facebook/react`.
+2. Fetch releases between `FROM` and `TO`. Use `GITHUB_TOKEN` when available;
+   `SERPAPI_API_KEY` enables a SerpApi fallback; `--notes FILE` runs fully
+   offline from saved release notes.
+3. Select releases with `--max-releases` (default 12). Fast mode focuses on the
+   first release of the target line (for React 18→19, `v19.0.0`); `--deep`
+   analyzes every fetched release.
+4. Extract breaking changes with Gemma. The model must return exact quote
+   strings; each quote is checked against the release-note source. A
+   deterministic fallback extracts exact `Removed:`/`Deprecated:` bullet lines
+   when the small model does not return usable quotes.
+5. Extract API names from the declared part of each change, search tracked code
+   files, and retain only changes with at least one code match. Dotted APIs may
+   match unqualified imports (`ReactDOM.findDOMNode` → `findDOMNode`).
+6. Write `scout.md`, `scout.json`, `release-notes.json`, and `manifest.json`;
+   print only touching changes and a replay score.
+7. With `--expect FILE`, score extracted and touched APIs against a known
+   breaking-change list. The React 18→19 fixture is
+   `benchmarks/scout-react-18-19.json`.
+
+Safety and limits:
+
+- Never writes to the scanned repository.
+- Skips dependencies, virtualenvs, build output, and secret-like files.
+- A missing match is not proof that the upgrade is safe; release notes can omit
+  behavioral changes and the model can miss APIs.
+- Deterministic fallback changes are marked `"method": "rule"` in JSON so the
+  report distinguishes them from model-proposed changes.
+- GitHub unauthenticated rate limits apply; use `--notes` or a token for
+  repeated runs.
+
+Example:
+
+```bash
+doxify scout react 18 19 --repo /path/to/app \
+  --out /tmp/scout-react-19 \
+  --expect benchmarks/scout-react-18-19.json
+```
+
 ---
 
 ## 8. User experience
@@ -741,8 +790,8 @@ Local AI:
 Unchanged constraints:
 
 - No database.
-- No cloud services.
-- No authentication.
+- No cloud services in local mode; opt-in Ollama Cloud inference only.
+- No authentication beyond `OLLAMA_API_KEY` in cloud mode.
 - No telemetry.
 - No Next.js API routes; FastAPI remains the only backend.
 
@@ -755,7 +804,7 @@ Why this stack:
 - Next.js gives file-based routing, React, TypeScript, and a clean local proxy to FastAPI.
 - Node 24 remains installed for Next.js, but the backend no longer depends on a Node server.
 - The Ollama HTTP API is straightforward with `httpx.AsyncClient`.
-- The whole app still runs locally with no cloud API, no API keys, and no per-token cost.
+- The whole app runs locally by default with no cloud API, no API keys, and no per-token cost. Cloud mode is an explicit alternative.
 
 Why FastAPI instead of Express:
 
@@ -904,7 +953,8 @@ make build      # cd web && npm run build
 
 - FastAPI: `http://127.0.0.1:8787`
 - Next.js dev server: `http://127.0.0.1:3000`
-- Ollama: `http://127.0.0.1:11434`
+- Ollama (local mode): `http://127.0.0.1:11434`
+- Ollama Cloud (opt-in): `https://ollama.com`
 
 The FastAPI server must bind to `127.0.0.1`, not `0.0.0.0`. Next.js should also bind to `127.0.0.1` for the local demo.
 
@@ -1835,18 +1885,28 @@ performance, user counts, or licensing that the evidence does not support.
 
 ## 16. Security and privacy
 
-### 16.1 Local-only guarantees
+### 16.1 Default local-first guarantees
 
 - API binds to `127.0.0.1`.
 - No telemetry.
 - No analytics.
-- No cloud API calls.
+- No cloud API calls unless the user explicitly passes `--provider cloud` or sets `DOXIFY_PROVIDER=cloud`.
 - No GitHub OAuth.
 - No repository upload.
-- Only network call: `http://127.0.0.1:11434` for Ollama.
-- The app should work with Wi-Fi off.
+- Default network call: `http://127.0.0.1:11434` for Ollama.
+- The app should work with Wi-Fi off in local mode.
 
-### 16.2 Path safety
+### 16.2 Opt-in Ollama Cloud
+
+- Activated only by `--provider cloud` or `DOXIFY_PROVIDER=cloud`; there is no automatic fallback.
+- Requires `OLLAMA_API_KEY`; keys are read from the environment and never written to artifacts.
+- Sends evidence cards (file paths, snippets, commit messages, and dependency names) to `https://ollama.com`.
+- Prints a visible warning before the first cloud call.
+- Uses `gemma4:31b` by default; users can override with `--model`.
+- The deterministic scanner still redacts secrets before evidence cards are created.
+- Cloud usage may incur provider charges.
+
+### 16.3 Path safety
 
 - Resolve the repo path with `pathlib.Path.resolve(strict=True)` and verify it is a directory.
 - Reject `/`, the home directory, and the tool’s own repo.
@@ -1854,7 +1914,7 @@ performance, user counts, or licensing that the evidence does not support.
 - Do not follow symlinks outside the repo.
 - Use `asyncio.create_subprocess_exec("git", [...])` or `subprocess.run(["git", ...])`, never string interpolation into a shell and never `shell=True`.
 
-### 16.3 Secret handling
+### 16.4 Secret handling
 
 Skip or redact:
 
@@ -1871,7 +1931,7 @@ Add a visible note:
 
 > Doxify skips common secret files, but it is not a security scanner. Review the exported case study before publishing.
 
-### 16.4 Output safety
+### 16.5 Output safety
 
 The exported case study may contain:
 
@@ -1884,7 +1944,7 @@ The user must review it before publishing. The app should show a confirmation sc
 
 > This export contains excerpts from your repository. Review it before sharing.
 
-### 16.5 Model safety
+### 16.6 Model safety
 
 - The model never receives the whole repo.
 - The model receives short evidence cards.
@@ -2198,7 +2258,7 @@ Target length: 3–5 minutes.
 - Turn off Wi-Fi.
 - Compile again or show the model running locally.
 - Show `ollama ps` or the local model call.
-- Say: “No API keys, no upload, no per-token cost.”
+- Say: “In local mode: no API keys, no upload, no per-token cost.”
 
 **3:40–4:00 — Close**
 
@@ -2275,8 +2335,9 @@ Include a simple diagram.
 **6. Why open innovation matters**
 
 - Private repos and career claims.
-- No upload, no API keys, no per-token cost.
-- Offline.
+- Local mode by default: no upload, no API keys, no per-token cost.
+- Opt-in Ollama Cloud mode for machines without a local model.
+- Offline in local mode.
 - Model portability.
 - Inspectable code.
 
@@ -2411,7 +2472,7 @@ Mitigation:
 - the story is anti-slop, not “AI writes your portfolio,”
 - the demo shows a false claim being rejected,
 - the output includes an interview defense pack,
-- local-only is central, not decorative,
+- local-first is central, not decorative,
 - the DEV post explains the difference clearly.
 
 ### 22.5 The demo repo has no README
@@ -2452,15 +2513,17 @@ Mitigation:
 - video,
 - clear setup instructions,
 - a “bring your own model” note,
+- `--provider cloud` with `OLLAMA_API_KEY` for machines without Ollama,
 - the app can still show the precomputed session in read-only mode if implemented.
 
 ### 22.9 Privacy concerns
 
 Mitigation:
 
-- local-only architecture,
+- local-first architecture,
 - no telemetry,
-- no upload,
+- no upload in local mode,
+- explicit cloud warning before any upload,
 - secret skipping,
 - export warning,
 - no GitHub OAuth.
@@ -2559,11 +2622,18 @@ uv sync --frozen
 # Check local dependencies and Ollama
 uv run doxify doctor
 
+# Or check Ollama Cloud without installing Ollama locally
+export OLLAMA_API_KEY="your_api_key"
+uv run doxify doctor --provider cloud
+
 # Scan the demo repository without calling the model
 uv run doxify scan /home/ekomjah/Desktop/repos/scholarship-mcp
 
 # Compile the full case study and defense pack
 uv run doxify compile /home/ekomjah/Desktop/repos/scholarship-mcp
+
+# Or compile with the hosted Gemma model
+uv run doxify compile /home/ekomjah/Desktop/repos/scholarship-mcp --provider cloud
 
 # Generate an evidence-backed README into /tmp
 uv run doxify readme /home/ekomjah/Desktop/repos/scholarship-mcp \

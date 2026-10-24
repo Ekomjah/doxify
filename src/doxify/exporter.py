@@ -30,7 +30,7 @@ def write_case_study(
     lines = [
         f"# {repo.name}: an evidence-backed case study",
         "",
-        "> Compiled locally with Doxify. Citations point to the evidence appendix.",
+        "> Compiled with Doxify. Citations point to the evidence appendix.",
         "> Unverified statements are marked [needs evidence]; author context is marked [attested].",
         "",
     ]

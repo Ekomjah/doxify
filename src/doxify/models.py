@@ -185,6 +185,8 @@ class SessionManifest(BaseModel):
     updated_at: str
     repo: RepoSummary
     model: str
+    provider: str = "local"
+    model_host: str | None = None
     status: str = "created"
     warnings: list[str] = Field(default_factory=list)
     artifacts: list[str] = Field(default_factory=list)
@@ -208,3 +210,98 @@ class SectionSpec(BaseModel):
     title: str
     goal: str
     keywords: list[str] = Field(default_factory=list)
+
+
+class ReleaseNote(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    version: str
+    title: str
+    url: str
+    body: str
+    source: str = "github"
+    published_at: str | None = None
+
+
+class ScoutSource(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    kind: str
+    title: str
+    url: str
+    version: str
+    published_at: str | None = None
+    note_chars: int = 0
+
+
+class CodeMatch(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    path: str
+    line: int
+    column: int
+    snippet: str
+    api: str
+    change_id: str
+
+
+class BreakingChange(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    package: str
+    release_version: str
+    title: str
+    quote: str
+    apis: list[str] = Field(default_factory=list)
+    migration: str | None = None
+    severity: str = "medium"
+    source_title: str
+    source_url: str
+    source_kind: str
+    method: str = "model"
+    matches: list[CodeMatch] = Field(default_factory=list)
+
+
+class ScoutScore(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    expected: list[str] = Field(default_factory=list)
+    extracted: list[str] = Field(default_factory=list)
+    touched: list[str] = Field(default_factory=list)
+    missed: list[str] = Field(default_factory=list)
+
+
+class ScoutSummary(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    releases: int = 0
+    analyzed_releases: int = 0
+    changes: int = 0
+    fallback_changes: int = 0
+    touching: int = 0
+    matches: int = 0
+    files_scanned: int = 0
+    apis_searched: int = 0
+    expected_apis: int = 0
+    expected_extracted: int = 0
+
+
+class ScoutReport(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: str = SCHEMA_VERSION
+    package: str
+    github_repo: str | None = None
+    from_version: str
+    to_version: str
+    repo: RepoSummary
+    model: str
+    created_at: str
+    provider: str = "local"
+    model_host: str | None = None
+    sources: list[ScoutSource] = Field(default_factory=list)
+    changes: list[BreakingChange] = Field(default_factory=list)
+    summary: ScoutSummary = Field(default_factory=ScoutSummary)
+    score: ScoutScore | None = None
+    warnings: list[str] = Field(default_factory=list)

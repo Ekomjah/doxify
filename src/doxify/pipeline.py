@@ -86,6 +86,7 @@ def scan_only(
         updated_at=now,
         repo=scan.repo,
         model=model,
+        provider="none",
         status="scanned",
     )
     write_manifest(output / MANIFEST, manifest, [EVIDENCE])
@@ -116,6 +117,8 @@ def compile_repo(
         updated_at=now,
         repo=scan.repo,
         model=model,
+        provider=client.provider,
+        model_host=client.host,
         status="running",
     )
     write_manifest(output / MANIFEST, manifest, [])

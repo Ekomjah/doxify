@@ -29,7 +29,7 @@ class RepoContext:
     tracked_files: list[str]
 
 
-def open_repo(path: Path) -> Repo:
+def open_repo(path: Path, *, allow_tool_root: bool = False) -> Repo:
     try:
         root = path.expanduser().resolve(strict=True)
     except OSError as exc:
@@ -41,7 +41,7 @@ def open_repo(path: Path) -> Repo:
         raise RepoError("Refusing to scan the filesystem root.")
     if root == Path.home():
         raise RepoError("Refusing to scan the home directory.")
-    if root == TOOL_ROOT:
+    if root == TOOL_ROOT and not allow_tool_root:
         raise RepoError("Refusing to scan Doxify's own repository.")
 
     try:
