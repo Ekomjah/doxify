@@ -1,77 +1,54 @@
 *This is a submission for the [Hacktoberfest Open-Source AI Challenge Week 3: Slow and Steady](https://dev.to/challenges/hacktoberfest-week3-2026-10-19)*
 
-# Doxify: for sloths who finished the project and forgot the README
+# I built a local Gemma tool that writes the README I keep avoiding
 
-I had a working project, 20 commits, nine MCP tools, three database models, 26 seeded scholarship records, and no README.
+The repository had 20 commits, nine MCP tools, three database models, 26 seeded scholarship records, and no README.
 
-The code was done. My brain was a puddle.
+I had built the thing. I had not explained it.
 
-If you have ever pushed the last commit and then remembered that a repository needs a front door, you know the feeling. The work exists, but the explanation does not. Interviewers, open-source contributors, bots, and fellow sloths land on the repo, see a blank README, and bounce. Then, two years later, you come back and the dependency tree has moved on without you. The build is deprecated, the upgrade notes are enormous, and you have no idea which lines actually matter.
+Every project ends the same way for me. The last commit lands, my brain shuts off, and the README is still empty. That page is the first thing an interviewer, a contributor, or another developer sees. If it is empty, they leave.
 
-Doxify is a tool for those two sloth moments.
+Two years later, the other bill comes due. The dependencies have moved, the build is deprecated, and the release notes are a wall. I do not need a generic summary. I need to know which lines in my repo are affected.
 
-It is a local-first evidence compiler for software work. It scans a local git repository, builds evidence cards, asks a Gemma model to write from those cards using a strict citation grammar, and then runs a deterministic verifier over every sentence.
+I built Doxify for both moments.
 
-The model writes. The compiler checks.
+I almost skipped this challenge because my laptop has a weak CPU. Most AI demos I saw assumed a GPU. I did not want to enter a challenge I could not run. `gemma3:1b` changed that: a small open-weight model that runs locally on the machine I already have. That constraint shaped the build: a small model, bounded prompts, and a deterministic verifier to carry the trust work.
 
-That distinction is the whole project.
+Doxify is a local-first CLI that scans a git repository, builds evidence cards, and asks Gemma to write from those cards. Then a deterministic verifier checks every sentence. It gives open-source developers, reviewers, bots, and fellow sloths their time back.
+
+The model writes. The code checks.
 
 ## What I Built
 
 Doxify turns a finished repository into the things a tired developer actually needs:
 
-- an evidence-backed README that explains the repo to the next visitor,
-- a Scout report that shows exactly where a dependency upgrade touches the code,
-- a portfolio-ready case study,
-- a claim ledger with a status for every sentence,
-- and an interview defense pack built from the same evidence.
-
-The case study compiler was the core of this competition build. It is still the deepest surface: it produces the cited story, the claim ledger, and the defense pack. But the product is shaped for sloths. The README is the front door. Scout is the time machine. The case study is the long-form story you can defend when someone asks.
-
-The JSON and Markdown artifacts are not the point by themselves. They are the receipts that make the sloth's life easier.
-
-### Three surfaces, one evidence engine
-
-| Surface | Sloth question | What it writes |
+| Surface | Question it answers | What it writes |
 |---|---|---|
 | Case study compiler | What did I build, and can I defend it? | `case-study.md`, `claims.json`, `defense.md` |
 | README compiler | What does this repo do, and how do I run it? | An evidence-marked `README.md` |
 | Scout | Which upgrade actually touches my code? | `scout.md`, `scout.json`, release notes, code matches |
-| CI gate | Can I trust the docs in this PR? | A pass/fail result from the same verifier |
+| CI gate | Can I trust the docs in this PR? | A pass or fail from the same verifier |
 
-The README and Scout workflows are not bolt-ons. They use the same evidence and verification machinery as the case study. That is why they belong in the same product.
+The case study came first. It was the core of this build and it is still the deepest part: six sections, a claim ledger, and an interview defense pack. The README and Scout reuse the same evidence engine, so they are not side projects. The case study is the story. The README is what visitors read. Scout is what future-you runs.
 
-Doxify is a new MIT-licensed project built during this challenge. The `scholarship-mcp` repository is the demo input, not the submitted project.
+Doxify is for the developer who just pushed the last commit and cannot face a blank page. It is for the developer whose best work is private or under NDA. It is for the maintainer who comes back to a project after two years of dependency drift. It is also for the open-source maintainer whose README is the first thing contributors and bots read.
 
-### Who Doxify is for
+It is not a portfolio site generator. It is a review tool. The useful output is not just a draft. It is the list of claims that did not survive verification.
 
-Doxify is for the sloth who has already done the hard part:
+The sloth test is simple: start it, walk away, and come back to a review queue.
 
-- the developer who just pushed the last commit and cannot face a blank README,
-- the career switcher or bootcamp graduate who needs to explain technical work,
-- the developer whose best work is private or under NDA,
-- the open-source maintainer whose README is a landing page for contributors and bots,
-- the developer returning to a project after two years of dependency drift,
-- and teams that want documentation claims checked in CI instead of trusted by vibes.
+### README
 
-It is not a fully automatic portfolio site and it is not a marketing copy generator. It is a review tool. The useful output is not just a draft; it is the list of claims that did not survive verification.
+`doxify readme` runs the same compile, then renders a README from verified and attested material.
 
-A sloth does not sprint through documentation. A sloth compiles it, reviews it, and goes back to hanging.
-
-### The sloth's front door: README
-
-`doxify readme` runs the same compile, then renders a clean README from verified and attested material.
-
-The visible prose has no citation clutter. The provenance lives in HTML comments:
+Readers get clean Markdown. CI gets provenance:
 
 ```markdown
 <!-- doxify-evidence: E2 E4 E5 E6 E7 -->
 <!-- doxify-attested: project description and positioning -->
 ```
 
-Readers get a normal README. CI gets an audit trail.
-
-The README builder omits unresolved claims from visible prose, strips the "No README" evidence card, refuses to overwrite an existing README without `--force`, and keeps a backup when it does. The temporary compile session can be inspected or cleaned up.
+Unresolved claims are left out of the visible page. The README builder also refuses to overwrite an existing README without `--force`, and it keeps a backup when it does.
 
 ```python
 if target.exists() and not force:
@@ -81,45 +58,41 @@ if target.exists() and not force:
     )
 ```
 
-That is the sloth-safe write path. The tool does not eat your existing README while you are looking away.
+The tool does not eat your existing README while you are looking away.
 
-### The sloth's time machine: Scout
+### Scout
 
 `doxify scout react 18 19 --repo /path/to/app` fetches release notes in the upgrade range, extracts breaking changes with exact quotes, and searches the tracked code for the affected APIs.
 
 The point is not "here is everything that changed in React 19." The point is "here is the short list of changes that touch this repository, with file and line matches."
 
-Scout is deliberately strict about quotes. If the model returns a "quote" that is not actually in the release notes, the change is dropped. If the model fails, a deterministic fallback extracts breaking-change lines instead. The report only shows changes that have a code match, because a breaking change that does not touch this repository is not this repository's problem.
+Scout drops any breaking change whose quote is not actually in the release notes. If the model fails, a deterministic fallback extracts breaking-change lines instead. The report only shows changes that have a code match, because a breaking change that does not touch this repository is not this repository's problem.
 
-It writes `scout.md`, `scout.json`, `release-notes.json`, and `manifest.json`, and it never modifies the scanned repository.
+The repository includes a [replay fixture](https://github.com/Ekomjah/doxify/blob/main/benchmarks/scout-react-18-19.json) for the React 18 to 19 upgrade, so extraction recall can be checked against a known list instead of judged by how convincing the output looks.
 
-The repository includes a replay fixture for the React 18 to 19 upgrade, so extraction recall can be checked against a known list instead of judged by how convincing the output looks.
-
-### The sloth's story: case study
+### Case study
 
 `doxify compile` produces six sections: Snapshot, The problem, The approach, The hard part, What shipped, and What I would change.
 
-For each narrative section, Doxify retrieves up to three evidence cards and gives them to Gemma. The model is instructed to write with `[E#]` citations that point back to the evidence ledger. Then the deterministic verifier checks those citations, numbers, identifiers, and a list of claims that code cannot prove.
+For each narrative section, Doxify retrieves up to three evidence cards and gives them to Gemma. The model writes with `[E#]` citations. The verifier checks the citations, numbers, identifiers, and a list of claims that code cannot prove.
 
-Unsupported sentences are not deleted silently. They are marked `[needs evidence]`, paired with a gap question, and included in the claim ledger. Author context can be added with `doxify attest`, and it is visibly labeled as an attestation rather than treated as repository proof.
+Unsupported sentences are not deleted silently. They are marked `[needs evidence]`, paired with a gap question, and included in the claim ledger. Author context can be added with `doxify attest` and is labeled as an attestation, not repository proof.
 
-The output is not "here is your finished portfolio." It is "here is the draft, here is the proof, and here are the 34 sentences you need to think about."
+The checked-in `nextjs-dashboard` run left 34 of its 47 claims needing evidence. That is the product working. The 34 are the review queue.
 
-That is more useful to me than a polished lie.
+That artifact is the raw run, not a cleaned-up sample. The `[needs evidence]` tags and the model's awkward openings are the point: the verifier flags them instead of hiding them.
 
 ## Demo
 
-There is no hosted demo, and that is deliberate. Doxify's default workflow is local; the repository under analysis should not have to leave the machine.
+There is no hosted demo. Doxify is a CLI, and the repository under analysis does not have to leave the machine. The walkthrough is the command block below; the checked-in artifacts are its output.
 
-The motivating before/after is `scholarship-mcp`: 20 commits, nine MCP tools, three models, 26 seeded records, and no README. A real project with a real technical arc and no written narrative.
+The motivating demo is `scholarship-mcp`: 20 commits, nine MCP tools, three models, 26 seeded records, and no README. The reproducibility artifact is a run against `nextjs-dashboard`, because it is a useful stress test.
 
-The checked-in reproducibility artifact is a run against `nextjs-dashboard`, because it is a useful stress test. That run produced:
+That run produced:
 
 - **13 verified claims**
 - **34 claims that need evidence**
 - **0 rejected claims**
-
-That is the demo. The tool is showing you the 34 sentences it will not pretend are proven.
 
 Reproduce it locally:
 
@@ -135,7 +108,7 @@ uv run doxify readme /path/to/nextjs-dashboard --output /tmp/README.md
 SERPAPI_API_KEY=... uv run doxify scout react 18 19 --repo /path/to/app
 ```
 
-Sentry is opt-in: leave `SENTRY_DSN` unset to keep tracing off, or set it to see command, stage, model, and HTTP spans.
+Sentry is opt-in. Leave `SENTRY_DSN` unset to keep tracing off, or set it to see command, stage, model, and HTTP spans.
 
 Precomputed artifacts:
 
@@ -143,75 +116,43 @@ Precomputed artifacts:
 - [Claim ledger](https://github.com/Ekomjah/doxify/blob/main/output/next-dashboard/case-study/claims.json)
 - [Defense pack](https://github.com/Ekomjah/doxify/blob/main/output/next-dashboard/case-study/defense.md)
 
-A 90-second terminal recording of those commands is the intended video demo. The checked-in output is the same artifact.
-
 ## Code
 
 The full project is at [github.com/Ekomjah/doxify](https://github.com/Ekomjah/doxify).
 
 Start with:
 
-- [`src/doxify/pipeline.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/pipeline.py) — the compile, README, verify, and export flows.
-- [`src/doxify/evidence.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/evidence.py) — deterministic repository scanning and evidence cards.
+- [`src/doxify/pipeline.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/pipeline.py) — compile, README, verify, and export.
+- [`src/doxify/evidence.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/evidence.py) — deterministic scanning and evidence cards.
 - [`src/doxify/verifier.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/verifier.py) — citation, number, identifier, and forbidden-claim checks.
-- [`src/doxify/scout.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/scout.py) — release-note extraction, quote validation, SerpApi fallback, and code matching.
+- [`src/doxify/scout.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/scout.py) — release notes, quote validation, SerpApi fallback, and code matching.
 - [`src/doxify/monitoring.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/monitoring.py) — opt-in Sentry tracing.
-- [`src/doxify/redaction.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/redaction.py) — the redaction policy that keeps traces boring.
-- [`src/doxify/selfcheck.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/selfcheck.py) — the local health checks behind the Sentry cron monitor.
+- [`src/doxify/redaction.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/redaction.py) — the redaction policy.
+- [`src/doxify/selfcheck.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/selfcheck.py) — health checks for the Sentry cron monitor.
+- [`docs/observability.md`](https://github.com/Ekomjah/doxify/blob/main/docs/observability.md) — Sentry setup, data policy, and dashboards.
 - [`action.yml`](https://github.com/Ekomjah/doxify/blob/main/action.yml) — the composite GitHub Action.
-- [`.github/workflows/ci.yml`](https://github.com/Ekomjah/doxify/blob/main/.github/workflows/ci.yml) — the CI and self-audit jobs.
+- [`.github/workflows/ci.yml`](https://github.com/Ekomjah/doxify/blob/main/.github/workflows/ci.yml) — tests, build, and the self-audit.
+- [`.github/workflows/sentry-nightly.yml`](https://github.com/Ekomjah/doxify/blob/main/.github/workflows/sentry-nightly.yml) — nightly self-check and cron check-in.
 
-The repository includes 73 tests, a Ruff check, a build check, and a self-audit that runs Doxify's own verifier against Doxify's own README.
+The repository includes 73 tests, a Ruff check, a build check, and a self-audit that runs Doxify's verifier against Doxify's README.
 
 ## How I Built It
 
-Doxify is a Python 3.10 CLI built with Typer, Rich, Pydantic, GitPython, Ollama, and the Sentry SDK. The default model is `gemma3:1b` running locally. Users who cannot or do not want to install Ollama can explicitly opt into Ollama Cloud with `--provider cloud` and `OLLAMA_API_KEY`; cloud mode defaults to a Gemma-family `gemma4:31b` model and warns that evidence cards will leave the machine.
+Doxify is a Python 3.10 CLI built with Typer, Rich, Pydantic, GitPython, Ollama, and the Sentry SDK. The default model is `gemma3:1b` running locally. Users who cannot or do not want to install Ollama can opt into Ollama Cloud with `--provider cloud` and `OLLAMA_API_KEY`; cloud mode defaults to `gemma4:31b` and warns that evidence cards will leave the machine.
 
-The architecture is intentionally boring:
-
-```text
-local repo
-   |
-   v
-deterministic scan  ->  evidence cards
-   |
-   v
-retrieve 3 cards per section
-   |
-   v
-Gemma drafts with [E#] citations
-   |
-   v
-deterministic verifier
-   |
-   +--> verified / attested
-   +--> needs evidence -> gap question
-   +--> rejected -> visible warning
-   |
-   v
-README / case study / defense pack / CI result
-```
-
-Around that core:
+The core pipeline is deliberately boring:
 
 ```text
-GitHub releases / SerpApi / --notes
-        -> Scout -> exact-quote check -> code search -> scout.md
-
-Sentry (opt-in) -> command, stage, model, and HTTP spans
-GitHub Actions -> lint, test, build, verify, expected-failure check
+repo -> evidence cards -> 3 cards per section -> Gemma with [E#]
+     -> deterministic verifier -> README / case study / defense / CI
 ```
 
-The hard part was not getting a model to write. The hard part was making a 1B model trustworthy enough to be useful.
-
-A 1B model cannot hold a whole repository in context. Doxify does not ask it to. It gives the model a small set of precise evidence cards and a citation grammar. The model's job is to turn those cards into readable prose. The compiler's job is to decide whether the prose is allowed to survive.
+A 1B model cannot hold a whole repository. Doxify does not ask it to. It gives the model a small set of precise evidence cards and a citation grammar. The model turns those cards into prose. The compiler decides whether the prose is allowed to survive.
 
 ### The compile loop
 
-The pipeline does not let the model write the whole document and then hope. It builds the case study section by section:
-
 ```python
-for index, spec in enumerate(SECTION_SPECS, start=1):
+for spec in SECTION_SPECS:
     cards = retrieve_evidence(scan.evidence, spec, limit=3)
 
     if spec.id in {"snapshot", "problem", "reflection"}:
@@ -241,9 +182,9 @@ claims = verify_claims(claims, scan.evidence)
 
 Snapshot, problem framing, and reflection are deterministic templates because those sections are mostly structure. The narrative sections use the model. If the model fails, the section falls back to a template and the failure is recorded in the manifest.
 
-### The verifier is the product
+### The verifier
 
-Every substantive sentence is parsed into a claim. Every `[E#]` is checked against the evidence ledger. A generated claim without a citation cannot pass. A citation to an evidence ID that does not exist is rejected outright.
+Every substantive sentence becomes a claim. A generated claim without a citation cannot pass. A citation to an evidence ID that does not exist is rejected.
 
 ```python
 if not claim.evidence_ids:
@@ -252,36 +193,29 @@ if not claim.evidence_ids:
     return claim
 
 cited = [evidence_by_id.get(evidence_id) for evidence_id in claim.evidence_ids]
-unknown = [
-    evidence_id
-    for evidence_id, card in zip(claim.evidence_ids, cited, strict=False)
-    if card is None
-]
+unknown = [e for e, card in zip(claim.evidence_ids, cited, strict=False) if card is None]
 if unknown:
     claim.status = ClaimStatus.REJECTED
     claim.reason = f"Unknown evidence citation(s): {', '.join(unknown)}."
     return claim
 ```
 
-After that, the verifier checks numbers against the cited evidence, checks code identifiers, checks token overlap, and flags claims that code cannot prove: deployment, "tests pass," OAuth, user counts, performance improvements, awards, team size, and "first/only" claims.
+The verifier also checks numbers against the cited evidence, checks code identifiers, checks token overlap, and flags claims that code cannot prove: deployment, "tests pass," OAuth, user counts, performance improvements, awards, team size, and "first/only" claims.
 
-If a sentence says a repository has 30 records and the evidence says 26, it is rejected. If it says "reduced latency by 40%" and the evidence has no measurement, it needs evidence. If it says "deployed to production," it needs human evidence; a deployment keyword in a config file is not enough.
-
-The verifier is intentionally conservative. It catches unsupported claims, not every subtle falsehood. That limitation is documented, and it is why attestations are labeled separately.
+A sentence that says the repository has 30 records when the evidence says 26 is rejected. A sentence that says "reduced latency by 40%" without a measurement needs evidence. A sentence that says "deployed to production" needs human evidence; a deployment keyword in a config file is not enough.
 
 ### README provenance
 
-The README mode keeps the document clean but auditable:
+The visible README only gets supported material. The omitted claims stay in the compile session.
 
 ```python
 omitted = [
-    claim
-    for claim in claims
+    claim for claim in claims
     if claim.status not in {ClaimStatus.VERIFIED, ClaimStatus.ATTESTED}
 ]
 ```
 
-Those omitted claims stay in the compile session. The visible README gets the supported material, while the hidden markers tell CI which evidence supports each section:
+The hidden markers tell CI which evidence supports each section:
 
 ```python
 ids = " ".join(dict.fromkeys(card.id for card in cards))
@@ -289,11 +223,9 @@ if ids:
     lines.extend(["", f"<!-- doxify-evidence: {ids} -->"])
 ```
 
-This is also how Doxify audits its own README. The repository has a committed evidence file, hidden markers, and a CI job that fails if a section is unmarked or unsupported. The self-audit currently reports five verified claims and eight author-attested claims.
+That is how Doxify audits its own README. The repository has a committed evidence file, hidden markers, and a CI job that fails if a section is unmarked or unsupported. The self-audit currently reports five verified claims and eight author-attested claims.
 
 ### Scout's exact-quote rule
-
-Scout follows the same principle: the model can propose, but the source has to agree.
 
 ```python
 def quote_in_notes(quote: str, body: str) -> bool:
@@ -301,27 +233,23 @@ def quote_in_notes(quote: str, body: str) -> bool:
     return len(normalized) >= 12 and normalized in _normalize_quote(body)
 ```
 
-A breaking change whose quote is not found in the release notes is dropped:
+A breaking change whose quote is not found is dropped:
 
 ```python
 if note is None:
-    warnings.append(
-        "Dropped a change because its quote was not found in the release notes."
-    )
+    warnings.append("Dropped a change because its quote was not found in the release notes.")
     continue
 ```
 
 Then the deterministic code search looks for the affected APIs in tracked files, with word-boundary matching so `render` does not match `renderToString`:
 
 ```python
-pattern = re.compile(
-    rf"(?<![A-Za-z0-9_$]){re.escape(alias)}(?![A-Za-z0-9_$])"
-)
+pattern = re.compile(rf"(?<![A-Za-z0-9_$]){re.escape(alias)}(?![A-Za-z0-9_$])")
 ```
 
 Scout is a candidate finder, not a type checker. It tells you where to look. It does not promise the migration is complete.
 
-### SerpApi: release notes when GitHub is not enough
+### SerpApi
 
 Scout prefers an explicit `--notes` file, then GitHub releases, then SerpApi. The fallback searches for release-note pages and pulls their text. The exact-quote rule still applies, so a search result cannot become a confident breaking-change claim unless the quote is actually on the page.
 
@@ -332,23 +260,15 @@ if key:
     warnings.append("Used SerpApi because GitHub release notes were unavailable.")
 ```
 
-The query is deliberately specific:
-
-```python
-query = f"{package} {from_version} to {to_version} release notes breaking changes"
-```
-
-SerpApi is an optional accelerator, not a new dependency in the core workflow. No key means the user can still pass `--notes FILE` and stay fully offline. When the key is used, the HTTP span records only the scheme, host, and path, so the query string and API key do not leak into Sentry:
+No key means the user can still pass `--notes FILE` and stay offline. When the key is used, the HTTP span records only the scheme, host, and path, so the query string and API key do not leak into Sentry:
 
 ```python
 return f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
 ```
 
-### Sentry Agent Tracing: a nervous system for a local CLI
+### Sentry Agent Tracing
 
-A local CLI has a visibility problem: the user sees a spinner, not the pipeline. Sentry Agent Tracing gives Doxify an opt-in view of what actually happened without turning the tool into a data collector.
-
-The wiring starts at the CLI boundary:
+A local CLI has a visibility problem: the user sees a spinner, not the pipeline. Sentry gives Doxify an opt-in view of what happened without turning the tool into a data collector.
 
 ```python
 init_monitoring()
@@ -357,7 +277,7 @@ with command_transaction(command):
     app()
 ```
 
-Inside the Ollama client, a model call becomes a span with provider, model, temperature, max tokens, latency, and token usage:
+Inside the Ollama client, a model call becomes a span with provider, model, temperature, max tokens, latency, and token usage. The prompt and the output are not recorded.
 
 ```python
 with model_span(
@@ -374,7 +294,7 @@ with model_span(
     )
 ```
 
-That gives a trace shaped like this:
+The trace looks like this:
 
 ```text
 doxify.compile
@@ -389,35 +309,40 @@ doxify.compile
 
 When a compile is slow, the trace says whether the time went into scanning, the model, or verification. When Scout fails, the HTTP span shows which fetch failed without exposing the URL query string.
 
-The privacy side is not an afterthought. Monitoring only initializes when `SENTRY_DSN` is explicitly set, and `DOXIFY_SENTRY=0` turns it off. The SDK is configured with a restricted data collection policy:
+Monitoring only initializes when `SENTRY_DSN` is set, and `DOXIFY_SENTRY=0` turns it off. The SDK uses a restricted data collection policy:
 
 ```python
 SAFE_DATA_COLLECTION = {
     "user_info": False,
     "cookies": {"mode": "off"},
     "http_headers": {"request": {"mode": "off"}},
+    "http_bodies": [],
+    "url_query_params": {"mode": "off"},
+    "graphql": {"document": False, "variables": False},
     "gen_ai": {"inputs": False, "outputs": False},
     "database_query_data": False,
+    "queues": False,
     "stack_frame_variables": False,
+    "frame_context_lines": 0,
 }
 ```
 
-Prompts and model outputs are not collected. Tokens, API keys, and absolute home paths are redacted before events leave the process. `before_send`, `before_breadcrumb`, `before_send_transaction`, and `before_send_log` all pass through the same policy. The result is tracing that is useful for debugging and boring for anyone who should not see the repository.
+Tokens, API keys, and absolute home paths are redacted before events leave the process. `before_send`, `before_breadcrumb`, `before_send_transaction`, and `before_send_log` all pass through the same policy.
 
-The `self-check` command can also use a Sentry cron monitor:
+`self-check` can also use a Sentry cron monitor:
 
 ```python
 with cron_monitor(monitor_slug):
     result = run_self_check(client=client)
 ```
 
-The monitor config describes a nightly 3 a.m. UTC check-in with a 10-minute margin and a 15-minute maximum runtime; point a scheduler at `self-check` when you want the sloth to be watched. If the local model or the package install is broken, the sloth finds out before a user does.
+The monitor config describes a nightly 3 a.m. UTC check-in with a 10-minute margin and a 15-minute maximum runtime. `.github/workflows/sentry-nightly.yml` runs `doxify self-check` on that schedule, so a broken install shows up as a missed check-in.
 
-### GitHub Actions: the sloth's guardrail
+### GitHub Actions
 
-The GitHub Actions workflow is the part that lets a sloth walk away. It does not ask a human to remember to run the verifier.
+The test job installs `uv`, syncs the lockfile, runs Ruff, runs the 73 tests, builds the package, and uploads the distributions.
 
-The test job installs `uv`, syncs the lockfile, runs Ruff, runs the 73 tests, builds the package, and uploads the distributions. The verify job runs the thing this project is actually about:
+The verify job runs the self-audit through the local composite action:
 
 ```yaml
 - name: Verify self-audit README
@@ -428,9 +353,9 @@ The test job installs `uv`, syncs the lockfile, runs Ruff, runs the 73 tests, bu
     fail-on: needs_evidence,rejected
 ```
 
-It also runs the unresolved `nextjs-dashboard` case study through the same verifier and asserts that the step fails. That negative test matters: a verification system that has never failed is just a very confident green checkmark. The job sets `SENTRY_DSN=""` so CI does not initialize monitoring.
+It also runs the unresolved `nextjs-dashboard` case study through the same verifier and asserts that the step fails. That negative test matters. A verification system that has never failed is just a green checkmark. The job sets `SENTRY_DSN=""` so CI does not initialize monitoring.
 
-The composite action itself installs `uv`, syncs with `--no-dev`, and runs `doxify verify --check` with either a session or an artifact/evidence pair. External users can call it from their own workflow:
+The composite action installs `uv`, syncs with `--no-dev`, and runs `doxify verify --check` with either a session or an artifact/evidence pair. External users can call it from their own workflow:
 
 ```yaml
 - uses: Ekomjah/doxify@main
@@ -439,63 +364,71 @@ The composite action itself installs `uv`, syncs with `--no-dev`, and runs `doxi
     fail-on: needs_evidence,rejected
 ```
 
-This is the same verifier that runs locally. The action is not a second implementation with different rules; it is the CLI with a smaller interface.
+It is the same CLI with a smaller interface.
 
-### What is not done yet
+### What broke along the way
 
-- The current build is a CLI. The FastAPI and Next.js review UI is planned, not shipped.
-- Verification is lexical and deterministic, not full semantic entailment.
-- Scout relies on semver-style releases and release-note quality; it is best at major upgrades.
-- Doxify skips common secret files, but it is not a security scanner and does not sanitize a repository for publication.
-- Attestations are author-owned claims. They are labeled, not magically verified.
-- The agent-session write-up is in this post, but there is no separate DevRelay embed.
+**The first case study was too confident.** The run against the local demo repo left 34 of its 47 claims needing evidence. That is exactly the kind of fluent, vague writing I was trying to avoid. The fix was not a longer prompt. It was smaller evidence sets, deterministic templates for structural sections, and a review queue that shows every unresolved claim.
+
+**The README writer could overwrite an existing file.** It now refuses without `--force` and backs up the old file when it does.
+
+**Sentry's defaults are built for web apps, not private repositories.** They collect more than a local CLI should. Request bodies, headers, query strings, user info, and model inputs are now explicitly off. Tokens and paths are redacted. A monitoring feature that leaks the repository is worse than no monitoring.
+
+**A passing CI check proves very little if it cannot fail.** The verify job includes an unresolved case study that is expected to fail. If it ever passes, the job fails.
+
+### What I would do next
+
+The obvious next step is a hosted review UI for editing claims and attesting gaps. I have kept it out of this build on purpose: the CLI and the verifier are the parts that have to be right first.
+
+After that: semantic verification instead of lexical overlap, more language support in Scout, and a better story for non-semver dependencies.
 
 ## Why Does Open Innovation Matter?
 
-Because the most valuable repositories are often the ones you cannot upload.
+Four things were possible because the pieces are open:
 
-A developer with a private company repo, an NDA, or sensitive customer data cannot hand the code to a hosted writing tool. A closed API turns "help me write about my work" into "choose between privacy and help." That is a bad trade.
+- **The repo can stay private.** A developer with an NDA or sensitive customer data cannot upload the code to a hosted writing tool. Local Gemma means the evidence does not go to a model API.
+- **It runs on a normal laptop.** The same weak CPU that almost kept me out is enough for `gemma3:1b`, which is about 806 MB. After the model download, the default workflow is offline. No API key, no per-token bill.
+- **The model is a flag.** `--model` or `DOXIFY_MODEL` can swap Gemma for another Ollama model without changing the verifier.
+- **The verifier is inspectable.** You do not have to trust the model or trust me. The checks are in the repo, and the evidence is in the output.
 
-Open-weight Gemma changes the economics and the trust model. `gemma3:1b` is about 806 MB and runs on an 8 GB CPU laptop. That means a student on a cheap machine can use the default workflow offline, with no API key and no per-token bill. The repository evidence does not go to a model API in local mode. The model is small enough to run on the kind of laptop the target user already owns. And because the model is just a flag, the user can swap Gemma for another Ollama model without changing the verifier.
+The optional services do not change that. Sentry is off without a DSN. SerpApi is a fallback; `--notes FILE` keeps Scout offline. The GitHub Action runs the same local verifier.
 
-The open part is not just the weights. The verifier is open source too. You do not have to trust the model or trust me. You can read the checks, run them against the evidence, and see exactly why a sentence passed or failed. The output is portable Markdown and JSON, not a proprietary dashboard.
+Cloud mode exists for people who cannot install Ollama, but it is opt-in and warns that evidence cards leave the machine. The default stays local because privacy is the feature.
 
-Open innovation is also what makes the optional services honest. Sentry tracing, SerpApi, and the GitHub Action are useful, but they are not required for the core loop. No DSN means no tracing. No SerpApi key means `--notes FILE` still works. The local path remains the default because privacy is the feature.
-
-A sloth should not have to choose between a useful tool and a private repository. Local weights and an open verifier are what let the sloth have both.
+A sloth should not have to choose between a useful tool and a private repository.
 
 ## My Agent Session
 
-I built Doxify in an opencode session. I did not capture a separate DevRelay embed for this submission, and I am not going to invent one.
+I built Doxify in an opencode session. I did not capture a separate DevRelay embed, so I will not pretend I did.
 
-The session did the ordinary implementation work: scaffolding, refactors, the evidence scanner, the verifier, Scout, the Sentry wiring, the redaction policy, the self-check command, and the CI gate. The part I care about is the boundary it produced: the model is allowed to propose prose, but it is never allowed to certify it. That boundary is enforced in code, not in a prompt.
+The session did the ordinary implementation work: the scanner, the verifier, Scout, the Sentry wiring, the redaction policy, the self-check command, and the CI gate. The part I care about is the boundary it produced: the model is allowed to propose prose, but it is never allowed to certify it. That boundary is enforced in code.
 
-The durable record is in the manifest, the evidence ledger, the claim ledger, and the commit history. That is the same idea behind sharing an agent session: make the work inspectable, not just impressive.
+The durable record is the manifest, the evidence ledger, the claim ledger, and the commit history. That is the same idea behind sharing an agent session: make the work inspectable, not just impressive.
 
 ## The Lazy Payoff
 
-The lazy payoff is not "AI writes your portfolio while you sleep." It is "you review a cited draft instead of starting from a blank page."
+I used Doxify on `nextjs-dashboard` and on Doxify's own README.
 
-I used Doxify on `nextjs-dashboard` and on Doxify's own README. The `nextjs-dashboard` run returned 13 verified claims and 34 claims that need evidence. That sounds like a bad result. It is the point: the tool gave me a review queue instead of 34 confident sentences I would have had to fact-check from memory.
+The `nextjs-dashboard` run returned 13 verified claims and 34 claims that need evidence. That sounds like a bad result. It is the useful part: the tool gave me a review queue instead of 34 confident sentences I would have had to fact-check from memory.
 
-The README run gave me a clean README with hidden provenance that CI can check. The Scout run turns a stack of release notes into a list of breaking changes and file/line matches, which is a much smaller job than reading every note and guessing what matters.
+The README run gave me a clean README with hidden provenance that CI can check. Scout turns a stack of release notes into a list of breaking changes and file/line matches.
 
-For `scholarship-mcp`, the input is 20 commits, nine tools, three models, and 26 records with no README. The first compile turns that raw history into a structured draft, a claim ledger, and an interview defense pack. The user's job shifts from writing to verifying.
+`scholarship-mcp` is the motivating input: 20 commits, nine tools, three models, and 26 records with no README. A compile turns that raw history into a structured draft, a claim ledger, and an interview defense pack. The job shifts from writing to verifying.
 
-The design target is a sub-10-minute local compile on an 8 GB CPU laptop. The model is small, the prompts are bounded, and the expensive trust work is deterministic. I would rather ship a 1B model that says "I cannot prove that" than a larger model that says everything confidently.
+The design target is a sub-10-minute local compile on an 8 GB CPU laptop, because that is the machine I have. The model is small, the prompts are bounded, and the expensive trust work is deterministic. I would rather ship a 1B model plus a verifier that says "I cannot prove that" than a larger model that says everything confidently.
 
-Slow and steady is the right pace for this problem. The branch can wait. The nap cannot. Doxify is patient about the part that matters: the evidence.
+Slow and steady is the right pace for this problem. The branch can wait. The nap cannot.
 
 ## Prize Categories
 
-**Best Use of Gemma.** Gemma is not a chatbot bolted onto a form. It is the writer inside a compiler: `gemma3:1b` locally by default, `gemma4:31b` on Ollama Cloud when the user explicitly opts in. The model drafts the narrative; deterministic checks decide what survives. The result is a Gemma-powered workflow that is useful precisely because the model is not the final authority.
+**Best Use of Gemma.** Gemma is the writer inside a compiler: `gemma3:1b` locally by default, `gemma4:31b` on Ollama Cloud when the user opts in. The model drafts the narrative; deterministic checks decide what survives.
 
-**Best Use of Sentry Agent Tracing.** Doxify records opt-in command transactions, pipeline stages, model spans, HTTP spans, token counts, and latency, while explicitly disabling prompt/output collection and redacting secrets and paths. `self-check --monitor-slug` turns a health check into a Sentry cron monitor. It is tracing for a local-first agent that still respects the local-first part.
+**Best Use of Sentry Agent Tracing.** Doxify records opt-in command transactions, pipeline stages, model spans, HTTP spans, token counts, and latency, while explicitly disabling prompt/output collection and redacting secrets and paths. The trace tree above is the shape; `self-check --monitor-slug` and the nightly workflow turn a health check into a Sentry cron monitor.
 
-**Best Use of SerpApi.** Scout's fallback searches for release notes when GitHub does not have them, pulls the page text, and still requires the model's breaking-change quote to exist in that text. SerpApi makes Scout work for packages with messy release distribution; `--notes FILE` keeps the offline path available.
+**Best Use of SerpApi.** Scout falls back to SerpApi when GitHub does not have release notes, pulls the page text, and still requires the model's breaking-change quote to exist in that text. `--notes FILE` keeps the offline path available.
 
-**Best Use of GitHub Copilot.** The repository's agent workflow is the GitHub Actions gate: every push and pull request gets lint, 73 tests, a build, and the Doxify evidence check. A Copilot-authored contribution gets the same treatment as mine: the agent can propose, and CI verifies. The Actions half is live; the contribution path is the point.
+**Best Use of GitHub Copilot.** The category includes automating your project with GitHub Actions. The whole contribution path is automated: every push and pull request runs lint, 73 tests, a build, and the Doxify evidence gate. A Copilot-authored PR gets the same check as mine. The agent can propose; CI verifies.
 
-**Best Use of Entire.** The build session is summarized in `My Agent Session`, and every compile writes a `manifest.json` plus `claims.json` so the reasoning trail survives the chat. Entire is about making agent work searchable and reviewable; Doxify makes the output of that work auditable.
+**Best Use of Entire.** The category asks you to share the agent session behind the project. I did that in `My Agent Session`, and every compile writes a `manifest.json` plus `claims.json` so the reasoning trail survives the chat. Doxify makes the output of the agent's work auditable.
 
-`#hf26challenge` `#hacktoberfest` `#opensource` `#ai` `#gemma` `#ollama` `#sentry` `#serpapi` `#githubactions` `#copilot` `#entire` `#portfolio` `#career` `#sloth`
+`#devchallenge` `#hf26challenge` `#hacktoberfest` `#opensource` `#ai` `#gemma` `#ollama` `#sentry` `#serpapi` `#githubactions` `#copilot` `#entire` `#portfolio` `#career` `#sloth`
