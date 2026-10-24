@@ -1,6 +1,7 @@
 [project]
 name = "doxify"
 version = "0.1.0"
+license = "MIT"
 description = "Compile evidence-backed READMEs and portfolio case studies from local git repositories"
 readme = "README.md"
 authors = [
@@ -12,6 +13,7 @@ dependencies = [
     "ollama>=0.6.3",
     "pydantic>=2.14.1",
     "rich>=15.0.0",
+    "sentry-sdk>=2.73.0",
     "tomli>=2.5.0",
     "typer>=0.27.3",
 ]

@@ -8,6 +8,12 @@ from pathlib import Path
 import typer
 from rich.table import Table
 
+from .audit import (
+    ArtifactReport,
+    audit_artifact,
+    failing_claims,
+    parse_fail_on,
+)
 from .console import (
     console,
     error,
@@ -18,12 +24,14 @@ from .console import (
     stage_progress,
 )
 from .errors import DoxifyError
-from .models import CompileSummary, ScanResult
+from .models import ClaimStatus, CompileSummary, ScanResult
+from .monitoring import init_monitoring, report_exception
 from .ollama_client import DEFAULT_MODEL, OllamaClient
 from .pipeline import (
     attest_session,
     compile_repo,
     export_session,
+    load_evidence_file,
     readme_repo,
     scan_only,
     verify_session,
@@ -362,15 +370,88 @@ def scout(
 
 @app.command()
 def verify(
-    session: Path = typer.Argument(..., exists=True, file_okay=False, resolve_path=True),
+    session: Path | None = typer.Argument(
+        None,
+        exists=True,
+        file_okay=False,
+        resolve_path=True,
+        help="Compile session directory. Omit when auditing an artifact directly.",
+    ),
+    artifact: Path | None = typer.Option(
+        None,
+        "--artifact",
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        resolve_path=True,
+        help="README or case study to audit.",
+    ),
+    evidence: Path | None = typer.Option(
+        None,
+        "--evidence",
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        resolve_path=True,
+        help="Evidence JSON for artifact-only verification.",
+    ),
+    fail_on: str = typer.Option(
+        "needs_evidence,rejected",
+        "--fail-on",
+        help="Comma-separated statuses that fail: needs_evidence, rejected, attested, or none.",
+    ),
+    check: bool = typer.Option(
+        False,
+        "--check",
+        help="Read-only verification; do not rewrite session artifacts.",
+    ),
 ) -> None:
-    """Re-run deterministic verification on an existing session."""
+    """Re-run deterministic verification on a session, README, or case study."""
+    if session is None and artifact is None:
+        raise typer.BadParameter("Provide SESSION or --artifact.")
+    if artifact is None and evidence is not None:
+        raise typer.BadParameter("--evidence requires --artifact.")
     try:
-        report = verify_session(session)
-        _print_verification(report.summary)
+        fail_statuses = parse_fail_on(fail_on)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+
+    session_report = None
+    artifact_report = None
+    try:
+        if session is not None:
+            session_report = verify_session(session, write=not check)
+        if artifact is not None:
+            if evidence is not None:
+                scan = load_evidence_file(evidence)
+            elif session is not None:
+                scan = load_evidence_file(session / "evidence.json")
+            else:
+                raise typer.BadParameter(
+                    "--artifact requires --evidence when SESSION is omitted."
+                )
+            artifact_report = audit_artifact(artifact, scan.evidence)
     except DoxifyError as exc:
         error(str(exc))
         raise typer.Exit(code=1) from exc
+
+    if session_report is not None:
+        _print_verification(session_report.summary)
+    if artifact_report is not None:
+        _print_artifact_verification(artifact_report, fail_statuses)
+
+    failed = []
+    if session_report is not None:
+        failed.extend(failing_claims(session_report.claims, fail_statuses))
+    if artifact_report is not None:
+        failed.extend(failing_claims(artifact_report.claims, fail_statuses))
+
+    if failed:
+        console.print(
+            f"[red]Verification failed:[/red] {len(failed)} claim(s) matched --fail-on."
+        )
+        raise typer.Exit(code=1)
+    console.print("[green]Verification passed.[/green]")
 
 
 @app.command()
@@ -413,8 +494,47 @@ def _print_verification(summary: CompileSummary) -> None:
     console.print(table)
 
 
+def _print_artifact_verification(
+    report: ArtifactReport,
+    fail_on: set[ClaimStatus],
+) -> None:
+    summary = report.summary
+    table = Table(title=f"Artifact: {report.path.name}", show_header=False)
+    table.add_column("Field", style="cyan")
+    table.add_column("Value")
+    table.add_row("Mode", report.mode)
+    table.add_row("Sections", str(len(report.sections)))
+    table.add_row(
+        "Attested sections",
+        str(sum(1 for section in report.sections if section.attested)),
+    )
+    if report.unmarked_sections:
+        table.add_row("Unmarked sections", str(len(report.unmarked_sections)))
+    table.add_row(
+        "Claims",
+        f"{summary.verified} verified, {summary.attested} attested, "
+        f"{summary.needs_evidence} needing evidence, {summary.rejected} rejected",
+    )
+    console.print(table)
+
+    failures = failing_claims(report.claims, fail_on)
+    for claim in failures[:10]:
+        console.print(f"[red]{claim.id} {claim.status.value}[/red] {claim.text}")
+        if claim.reason:
+            console.print(f"  {claim.reason}")
+    if len(failures) > 10:
+        console.print(f"  ... and {len(failures) - 10} more")
+
+
 def main() -> None:
-    app()
+    if init_monitoring():
+        try:
+            app()
+        except Exception as exc:
+            report_exception(exc)
+            raise
+    else:
+        app()
 
 
 if __name__ == "__main__":
