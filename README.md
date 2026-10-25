@@ -12,14 +12,34 @@ The model only writes; the compiler checks.
 
 ## Install
 
-Requires Python 3.10+ and git.
+Linux, macOS, and WSL:
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/Ekomjah/doxify/v0.1.0/install.sh -o /tmp/doxify-install.sh
+sh /tmp/doxify-install.sh
+```
+
+The installer requires `curl`, `git`, and `tar`. It installs `uv` if needed,
+places Doxify in an isolated per-user environment, and runs
+`doxify self-check`. It does not use `sudo`, install Ollama, or download a model.
+
+Verify the install:
+
+```bash
+doxify --version
+doxify self-check --json
+```
+
+From a source checkout:
+
+```bash
+git clone https://github.com/Ekomjah/doxify
+cd doxify
 uv sync
 uv run doxify --help
 ```
 
-Or install the package and run `doxify` directly.
+Native Windows is not supported by the shell installer yet. Use WSL for now.
 
 <!-- doxify-attested: installation instructions -->
 
@@ -70,6 +90,8 @@ Precedence is flag, then environment variable, then default.
 ## Commands
 
 ```bash
+doxify --version
+doxify self-check [--json] [--check-model]
 doxify doctor [--provider local|cloud]
 doxify scan REPO
 doxify compile REPO
