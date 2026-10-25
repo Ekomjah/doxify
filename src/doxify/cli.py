@@ -5,6 +5,8 @@ import re
 import shutil
 import sys
 from datetime import datetime
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as package_version
 from pathlib import Path
 
 import typer
@@ -57,6 +59,31 @@ app = typer.Typer(
         "from local git repositories, and scouts breaking dependency upgrades."
     ),
 )
+
+
+def _version_callback(value: bool) -> None:
+    if not value:
+        return
+    try:
+        current = package_version("doxify")
+    except PackageNotFoundError:
+        current = "0.1.0"
+    typer.echo(current)
+    raise typer.Exit()
+
+
+@app.callback()
+def _root(
+    version: bool = typer.Option(
+        False,
+        "--version",
+        "-V",
+        callback=_version_callback,
+        is_eager=True,
+        help="Show the installed Doxify version and exit.",
+    ),
+) -> None:
+    """Compile evidence-backed documentation from a local git repository."""
 
 
 def _default_output(repo: Path) -> Path:

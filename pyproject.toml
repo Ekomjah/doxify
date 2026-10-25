@@ -7,6 +7,15 @@ readme = "README.md"
 authors = [
     { name = "Ekomjah Edet", email = "ekomjahedet@gmail.com" }
 ]
+keywords = ["cli", "documentation", "gemma", "git", "ollama", "readme"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Documentation",
+]
 requires-python = ">=3.10"
 dependencies = [
     "gitpython>=3.2.1",
@@ -20,6 +29,12 @@ dependencies = [
 
 [project.scripts]
 doxify = "doxify:main"
+
+[project.urls]
+Homepage = "https://github.com/Ekomjah/doxify"
+Repository = "https://github.com/Ekomjah/doxify"
+Issues = "https://github.com/Ekomjah/doxify/issues"
+Changelog = "https://github.com/Ekomjah/doxify/releases"
 
 [build-system]
 requires = ["uv_build>=0.13.1,<0.14.0"]
