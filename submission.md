@@ -1,22 +1,31 @@
 *This is a submission for the [Hacktoberfest Open-Source AI Challenge Week 3: Slow and Steady](https://dev.to/challenges/hacktoberfest-week3-2026-10-19)*
 
-# I built a local Gemma tool that writes the README I keep avoiding
+# A 1B Gemma wrote 47 claims about a repo. My verifier let 13 through.
 
 The repository had 20 commits, nine MCP tools, three database models, 26 seeded scholarship records, and no README.
 
 I had built the thing. I had not explained it.
 
-Every project ends the same way for me. The last commit lands, my brain shuts off, and the README is still empty. That page is the first thing an interviewer, a contributor, or another developer sees. If it is empty, they leave.
+Every project ends the same way for me. The last commit lands, my brain shuts off, and the README stays empty. That page is the first thing an interviewer, a contributor, another developer, or a future-me sees. If it is empty, they leave.
 
 Two years later, the other bill comes due. The dependencies have moved, the build is deprecated, and the release notes are a wall. I do not need a generic summary. I need to know which lines in my repo are affected.
 
-I built Doxify for both moments.
+The obvious fix is "ask an AI to write it." That gives you fluent sentences like *built a scalable platform used by thousands of users* or *reduced latency by 40%*, which you then have to fact-check from memory, or defend in an interview. Fluent is not the same as true.
 
-I almost skipped this challenge because my laptop has a weak CPU. Most AI demos I saw assumed a GPU. I did not want to enter a challenge I could not run. `gemma3:1b` changed that: a small open-weight model that runs locally on the machine I already have. That constraint shaped the build: a small model, bounded prompts, and a deterministic verifier to carry the trust work.
+So I built **Doxify**, a local-first CLI where **the model writes and the code checks**. It scans a git repository, turns it into numbered evidence cards, asks a local Gemma to write only from those cards, and then a deterministic verifier decides which sentences survive. Whatever it can't prove becomes a question instead of a claim.
 
-Doxify is a local-first CLI that scans a git repository, builds evidence cards, and asks Gemma to write from those cards. Then a deterministic verifier checks every sentence. It gives open-source developers, reviewers, bots, and fellow sloths their time back.
+I almost skipped this challenge. My laptop has a weak CPU, and most AI demos I saw assumed a GPU. `gemma3:1b`, a model of about 806 MB, changed that. The constraint shaped the whole design: a small model, short prompts, and a verifier that carries the trust work.
+
+It gives open-source developers, reviewers, bots, and fellow sloths their time back.
 
 The model writes. The code checks.
+
+> **TL;DR**
+>
+> - **What:** a CLI that compiles a git repo into a cited case study, an evidence-marked README, a list of upgrade breakages that touch your code, and a CI gate. One evidence engine, four outputs.
+> - **The result that matters:** on one real repo, Gemma wrote 47 claims. **13 were verified, 34 were flagged "needs evidence", 0 were rejected.** Those 34 are the review queue, not a failure.
+> - **Where it runs:** an 8 GB, CPU-only laptop with `gemma3:1b` through Ollama. No API key, no upload. Cloud mode exists but is opt-in and warns you first.
+> - **How it is checked:** 74 tests, Ruff, a build check, and a CI job that runs Doxify's verifier on Doxify's own README and fails if a section is unsupported.
 
 ## What I Built
 
@@ -94,19 +103,27 @@ That run produced:
 - **34 claims that need evidence**
 - **0 rejected claims**
 
-Reproduce it locally:
+Install Doxify on Linux, macOS, or WSL:
 
 ```bash
-git clone https://github.com/Ekomjah/doxify
-cd doxify
-uv sync
-ollama pull gemma3:1b
-
-uv run doxify self-check --json
-uv run doxify compile /path/to/nextjs-dashboard --out /tmp/doxify-demo
-uv run doxify readme /path/to/nextjs-dashboard --output /tmp/README.md
-SERPAPI_API_KEY=... uv run doxify scout react 18 19 --repo /path/to/app
+curl -fsSL https://raw.githubusercontent.com/Ekomjah/doxify/v0.1.0/install.sh -o /tmp/doxify-install.sh
+sh /tmp/doxify-install.sh
+doxify --version
 ```
+
+The installer sets up an isolated `uv` environment and runs `doxify self-check`. It does not use `sudo`, install Ollama, or download a model.
+
+Reproduce the run locally:
+
+```bash
+ollama pull gemma3:1b
+doxify self-check --json
+doxify compile /path/to/nextjs-dashboard --out /tmp/doxify-demo
+doxify readme /path/to/nextjs-dashboard --output /tmp/README.md
+SERPAPI_API_KEY=... doxify scout react 18 19 --repo /path/to/app
+```
+
+Working from a source checkout instead? Run `uv sync`, then prefix each command with `uv run`.
 
 Sentry is opt-in. Leave `SENTRY_DSN` unset to keep tracing off, or set it to see command, stage, model, and HTTP spans.
 
@@ -122,6 +139,7 @@ The full project is at [github.com/Ekomjah/doxify](https://github.com/Ekomjah/do
 
 Start with:
 
+- [`install.sh`](https://github.com/Ekomjah/doxify/blob/main/install.sh) — one-command install for Linux, macOS, and WSL.
 - [`src/doxify/pipeline.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/pipeline.py) — compile, README, verify, and export.
 - [`src/doxify/evidence.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/evidence.py) — deterministic scanning and evidence cards.
 - [`src/doxify/verifier.py`](https://github.com/Ekomjah/doxify/blob/main/src/doxify/verifier.py) — citation, number, identifier, and forbidden-claim checks.
@@ -134,7 +152,7 @@ Start with:
 - [`.github/workflows/ci.yml`](https://github.com/Ekomjah/doxify/blob/main/.github/workflows/ci.yml) — tests, build, and the self-audit.
 - [`.github/workflows/sentry-nightly.yml`](https://github.com/Ekomjah/doxify/blob/main/.github/workflows/sentry-nightly.yml) — nightly self-check and cron check-in.
 
-The repository includes 73 tests, a Ruff check, a build check, and a self-audit that runs Doxify's verifier against Doxify's README.
+The repository includes 74 tests, a Ruff check, a build check, and a self-audit that runs Doxify's verifier against Doxify's README.
 
 ## How I Built It
 
@@ -340,7 +358,7 @@ The monitor config describes a nightly 3 a.m. UTC check-in with a 10-minute marg
 
 ### GitHub Actions
 
-The test job installs `uv`, syncs the lockfile, runs Ruff, runs the 73 tests, builds the package, and uploads the distributions.
+The test job installs `uv`, syncs the lockfile, runs Ruff, runs the 74 tests, builds the package, and uploads the distributions. A separate installer job runs `install.sh` from a source checkout, then checks `doxify --version` and `doxify self-check`.
 
 The verify job runs the self-audit through the local composite action:
 
@@ -411,13 +429,11 @@ I used Doxify on `nextjs-dashboard` and on Doxify's own README.
 
 The `nextjs-dashboard` run returned 13 verified claims and 34 claims that need evidence. That sounds like a bad result. It is the useful part: the tool gave me a review queue instead of 34 confident sentences I would have had to fact-check from memory.
 
-The README run gave me a clean README with hidden provenance that CI can check. Scout turns a stack of release notes into a list of breaking changes and file/line matches.
-
-`scholarship-mcp` is the motivating input: 20 commits, nine tools, three models, and 26 records with no README. A compile turns that raw history into a structured draft, a claim ledger, and an interview defense pack. The job shifts from writing to verifying.
+The README run produced a clean README with hidden provenance that CI can check. Scout turns a stack of release notes into the few breaking changes that touch my code, with file and line matches. And `scholarship-mcp`, the repo that started all this, now has something to compile: 20 commits and no README become a structured draft, a claim ledger, and an interview defense pack.
 
 The design target is a sub-10-minute local compile on an 8 GB CPU laptop, because that is the machine I have. The model is small, the prompts are bounded, and the expensive trust work is deterministic. I would rather ship a 1B model plus a verifier that says "I cannot prove that" than a larger model that says everything confidently.
 
-Slow and steady is the right pace for this problem. The branch can wait. The nap cannot.
+Slow and steady is the right pace for documentation, because the careful part is the part nobody wants to do by hand.
 
 ## Prize Categories
 
@@ -427,7 +443,7 @@ Slow and steady is the right pace for this problem. The branch can wait. The nap
 
 **Best Use of SerpApi.** Scout falls back to SerpApi when GitHub does not have release notes, pulls the page text, and still requires the model's breaking-change quote to exist in that text. `--notes FILE` keeps the offline path available.
 
-**Best Use of GitHub Copilot.** The category includes automating your project with GitHub Actions. The whole contribution path is automated: every push and pull request runs lint, 73 tests, a build, and the Doxify evidence gate. A Copilot-authored PR gets the same check as mine. The agent can propose; CI verifies.
+**Best Use of GitHub Copilot.** The category includes automating your project with GitHub Actions. The whole contribution path is automated: every push and pull request runs lint, 74 tests, a build, and the Doxify evidence gate. A Copilot-authored PR gets the same check as mine. The agent can propose; CI verifies.
 
 **Best Use of Entire.** The category asks you to share the agent session behind the project. I did that in `My Agent Session`, and every compile writes a `manifest.json` plus `claims.json` so the reasoning trail survives the chat. Doxify makes the output of the agent's work auditable.
 
