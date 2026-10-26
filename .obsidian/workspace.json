@@ -191,6 +191,7 @@
   },
   "active": "f2f9ed483cb74b0f",
   "lastOpenFiles": [
+    "hello-entire.md",
     "dist/doxify-0.1.0.tar.gz",
     "tests/__pycache__/test_cli_version.cpython-310-pytest-9.1.1.pyc",
     "install.sh",
@@ -202,7 +203,6 @@
     "src/under_oath/generator.py",
     "src/under_oath/evidence.py",
     "src/under_oath/scanner.py",
-    "src/under_oath/cli.py",
     "README.md"
   ]
 }
