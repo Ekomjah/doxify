@@ -106,7 +106,7 @@ That run produced:
 Install Doxify on Linux, macOS, or WSL:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Ekomjah/doxify/v0.1.0/install.sh -o /tmp/doxify-install.sh
+curl -fsSL --retry 3 --retry-delay 2 https://raw.githubusercontent.com/Ekomjah/doxify/v0.1.0/install.sh -o /tmp/doxify-install.sh
 sh /tmp/doxify-install.sh
 doxify --version
 ```

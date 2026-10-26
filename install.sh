@@ -36,6 +36,23 @@ fail() {
     exit 1
 }
 
+download_file() {
+    url=$1
+    dest=$2
+    attempts=0
+    while [ "$attempts" -lt 3 ]; do
+        if curl -fsSL --http1.1 "$url" -o "$dest"; then
+            return 0
+        fi
+        attempts=$((attempts + 1))
+        if [ "$attempts" -lt 3 ]; then
+            log "Download failed; retrying (${attempts}/3)..."
+            sleep 2
+        fi
+    done
+    return 1
+}
+
 VERSION="${DOXIFY_VERSION:-$DEFAULT_VERSION}"
 while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -93,8 +110,8 @@ else
     archive="$tmp_dir/doxify-${VERSION}.tar.gz"
     url="https://github.com/${REPO}/archive/refs/tags/v${VERSION}.tar.gz"
     log "Downloading Doxify v${VERSION}..."
-    curl -fsSL "$url" -o "$archive" || fail "could not download $url"
-    tar -xzf "$archive" -C "$tmp_dir"
+    download_file "$url" "$archive" || fail "could not download $url"
+    tar -xzf "$archive" -C "$tmp_dir" || fail "downloaded archive was invalid"
     source_dir="$tmp_dir/doxify-${VERSION}"
     [ -f "$source_dir/pyproject.toml" ] || fail "downloaded archive did not contain a Doxify source tree"
 fi
@@ -106,7 +123,7 @@ elif [ -x "$HOME/.local/bin/uv" ]; then
 else
     command -v tar >/dev/null 2>&1 || fail "tar is required to install uv"
     log "uv not found; installing it to $HOME/.local/bin"
-    curl -fsSL "$UV_INSTALL_URL" -o "$tmp_dir/uv-install.sh" || fail "could not download uv"
+    download_file "$UV_INSTALL_URL" "$tmp_dir/uv-install.sh" || fail "could not download uv"
     UV_NO_MODIFY_PATH=1 sh "$tmp_dir/uv-install.sh"
     if [ -x "$HOME/.local/bin/uv" ]; then
         uv_bin="$HOME/.local/bin/uv"
