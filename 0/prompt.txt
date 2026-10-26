@@ -1,0 +1,48 @@
+Please help me get started with sentry.
+
+org slug: ekomjah-denis
+run code: 2ea5669e79
+
+---
+
+use gh to create a new github repo called doxify, licence as mit and push to github
+
+---
+
+search doxify e2e for incompleted work/poorly done job that could use some refinements
+
+---
+
+plan fix for  fixes: #1, #2, #3, #6, #7
+
+---
+
+but one question: can doxify still work without making these changes?
+
+---
+
+Use the DevRelay Agent Sessions skill to save my existing OpenCode coding session for the Doxify project to DEV Community.
+
+1. Identify the actual OpenCode session transcript for the work on Doxify. Do not use Entire or its checkpoints.
+2. Inspect the transcript and redact API keys, tokens, passwords, private URLs, environment variable values, and sensitive local paths before uploading.
+3. Give the session a descriptive title: "Building Doxify with OpenCode".
+4. Upload the transcript to my DEV account using DevRelay.
+5. Tell me the resulting DEV Agent Session URL and how to curate and embed it in my DEV article.
+
+Do not publish my article. Do not invent missing session history or claim success unless the upload is confirmed.
+
+---
+
+Use the DevRelay Agent Sessions skill to save my existing OpenCode coding session for the Doxify project to DEV Community.
+
+1. Identify the actual OpenCode session transcript for the work on Doxify. Do not use Entire or its checkpoints.
+2. Inspect the transcript and redact API keys, tokens, passwords, private URLs, environment variable values, and sensitive local paths before uploading.
+3. Give the session a descriptive title: "Building Doxify with OpenCode".
+4. Upload the transcript to my DEV account using DevRelay.
+5. Tell me the resulting DEV Agent Session URL and how to curate and embed it in my DEV article.
+
+Do not publish my article. Do not invent missing session history or claim success unless the upload is confirmed.
+
+---
+
+help with the embed link on mlh to the entire agent session used in building it
